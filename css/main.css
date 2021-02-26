@@ -19,7 +19,10 @@ body {
 .sidebar {
 	background-color: #252525;
 	color: #FAFAFA;
-	min-height: 100vh;
+	/* make sidebar sticky */
+	height: 100vh;
+	position: sticky;
+	top: 0;
 }
 
 .head-img {
