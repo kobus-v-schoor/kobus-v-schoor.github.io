@@ -79,6 +79,9 @@ body {
 	margin-right: 0;
 }
 
+.nav-link .feather {
+	margin-right: 0;
+}
 
 /* navbar styling */
 .navbar-custom {
