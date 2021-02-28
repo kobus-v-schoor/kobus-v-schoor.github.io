@@ -98,3 +98,9 @@ body {
 .navbar-custom .nav-item:hover .nav-link {
 	color: #ffffff;
 }
+
+/* make table of contents sticky */
+#toc {
+	position: sticky;
+	top: 2%;
+}
