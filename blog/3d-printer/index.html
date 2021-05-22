@@ -1,0 +1,105 @@
+<!doctype html><html lang=en><head><script type=application/javascript>var doNotTrack=!1;doNotTrack||(window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)},ga.l=+new Date,ga('create','UA-155995545-2','auto'),ga('send','pageview'))</script><script async src=https://www.google-analytics.com/analytics.js></script><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1,shrink-to-fit=no"><meta property="og:title" content="Building a 3D printer from scratch"><meta property="og:description" content="How I designed and built my own DIY 3D printer, from random blobs to building Benchy"><meta property="og:type" content="article"><meta property="og:url" content="https://kobusvs.co.za/blog/3d-printer/"><meta property="og:image" content="https://kobusvs.co.za/blog/3d-printer/images/printer.webp"><meta property="article:section" content="blog"><meta property="article:published_time" content="2021-05-22T12:02:28+02:00"><meta property="article:modified_time" content="2021-05-22T12:02:28+02:00"><link rel=icon type=image/svg href=/img/logo.svg><link rel=stylesheet href=/css/bootstrap.min.css><link rel=stylesheet href=/css/main.css><link rel=stylesheet href=/css/highlight.css><title>Building a 3D printer from scratch · Kobus van Schoor</title></head><body><nav class="d-md-none navbar navbar-expand flex-column navbar-dark text-light navbar-custom"><a href=https://kobusvs.co.za/ class=navbar-brand><img src=/img/logo-outline.svg width=30 height=30>
+Kobus van Schoor</a><ul class=navbar-nav><li class="nav-item text-center"><a class=nav-link href=https://kobusvs.co.za/><i data-feather=home></i>Home</a></li><li class="nav-item text-center"><a class=nav-link href=https://kobusvs.co.za/about/><i data-feather=user></i>About</a></li><li class="nav-item text-center"><a class=nav-link href=/files/resume.pdf><i data-feather=file-text></i>Resume</a></li><li class="nav-item text-center"><a class=nav-link href=https://kobusvs.co.za/blog/><i data-feather=feather></i>Blog</a></li></ul></nav><div class=container-fluid><div class=row><nav class="d-none d-md-flex col-md-3 col-lg-2 flex-column align-items-start sidebar"><a href=https://kobusvs.co.za/ class=text-center><img src=/img/headshot.webp class="mt-3 head-img"></a><h5 class="align-self-center pt-3">Kobus van Schoor</h5><small class="align-self-center mb-3"><i class=f-16 data-feather=map-pin></i>Pretoria, South Africa</small>
+<span class="align-self-center d-flex flex-row"><a href=https://github.com/kobus-v-schoor/ class=social><i data-feather=github></i></a>
+<a href=https://www.linkedin.com/in/kobus-van-schoor class=social><i data-feather=linkedin></i></a>
+<a href=mailto:v.schoor.kobus@gmail.com class=social><i data-feather=mail></i></a></span><hr><a class=sidebar-link href=https://kobusvs.co.za/><i data-feather=home></i>
+Home</a>
+<a class=sidebar-link href=https://kobusvs.co.za/about/><i data-feather=user></i>
+About me</a>
+<a class=sidebar-link href=/files/resume.pdf><i data-feather=file-text></i>
+Resume</a>
+<a class=sidebar-link href=https://kobusvs.co.za/blog/><i data-feather=feather></i>
+Blog</a>
+<small class="mt-auto align-self-center">&copy; 2021 Kobus van Schoor</small></nav><main class="col-md-9 col-lg-10"><div class="container mt-5 mb-5"><div class=row><article class=col-xl-8><h1>Building a 3D printer from scratch</h1><div class="text-muted d-flex flex-column flex-md-row align-md-items-center mb-3"><span><i data-feather=clock></i>8 minutes</span>
+<span class=ml-md-2><i data-feather=calendar></i>22 May 2021</span>
+<span><i class=ml-md-2 data-feather=tag></i><a class=text-secondary href=https://kobusvs.co.za/tags/projects/>projects</a>, <a class=text-secondary href=https://kobusvs.co.za/tags/electronics/>electronics</a>, <a class=text-secondary href=https://kobusvs.co.za/tags/3d-printing/>3d-printing</a></span></div><p>In 2019 I decided that I was going to build my own 3D printer. For some unknown
+reason I even thought that I could do it cheaper than buying a commercial
+printer. Skip a few months ahead, and in a euphoric frenzy I was printing a
+semi-random deposit of filament on a skew bed. These days the printer is
+actually useful and printing Benchies to my heart&rsquo;s content. In this post I&rsquo;ll
+take you through the process I went through to design and build my printer. It
+won&rsquo;t be a detailed build guide but rather just my experience (and maybe a bit
+of a cautionary tale) of building my own 3D printer, from scratch.</p><h2 id=starting-with-the-basic-design>Starting with the basic design</h2><p>Before I could go ahead I needed to make a few basic choices regarding the
+design of the printer. After some Google-fu and watching countless YouTube
+videos I decided on the following:</p><ul><li>It was going to be a Cartesian printer (i.e. it moves straight along the x, y
+and z-axis)</li><li>I was going to use a Bowden style extruder</li><li>That I&rsquo;m going to design and build my own DIY controller</li><li>It would have at least a 20cm x 20cm x 20cm printing volume</li></ul><p>Exactly one of these worked out (it stayed a Cartesian printer).</p><h2 id=doing-the-cad-designs>Doing the CAD designs</h2><p>When I first started working on this project I had no idea how to design CAD
+models. Suffice it to say, this was not the easiest project to learn
+CAD with. But, eventually I got going using FreeCAD, a wonderful FOSS CAD
+solution that I still use for all my CAD&rsquo;ing needs. I initially started drawing
+up models of all the bought components (stepper motors, pulleys, rods etc.)
+after which I started with my own part designs.</p><p>Now at this point I didn&rsquo;t have access to my own printer so all the printed
+parts had to be printed somewhere else, which made prototyping a lot harder to
+do. After my first 7-hour long print, I excitedly took the rod and tried to
+push it in one of the mounting holes. This is the exact moment that I learned
+about tolerances. As you could probably guess, it didn&rsquo;t fit (including the
+other parts). So, back to the drawing board - after several prototype
+iterations the first parts started coming to life and soon enough I had some
+basic parts going.</p><p>For those interested, all my FreeCAD design files can be found in this <a href=https://github.com/kobus-v-schoor/printer>Github
+repo</a> (I&rsquo;m warning you now, don&rsquo;t
+expect much).</p><figure class=figure><img src=images/first-part.webp class="figure-img img-fluid rounded"><figcaption class=figure-caption>Forget what they tell you. Size does matter.</figcaption></figure><h2 id=printing-the-parts>Printing the parts</h2><p>The time I learned most about 3D printing was while I was printing my own
+printer. I learned a lot about warping (the printer I was initially using had
+no heated bed), tolerances, skipped steps and all those other fun things they
+never show to you. Since I had to print parts one-by-one on a printer I didn&rsquo;t
+own this initial printing phase took weeks to finish. I&rsquo;d set up a print to go
+overnight, get it the next day and test it. If it worked I&rsquo;d set up the next
+print on the following day. To make things more interesting, at this point in
+time our country had daily power interruptions - these don&rsquo;t tend to go great
+with long-running prints. Piece-by-piece it was starting to resemble a 3D
+printer.</p><figure class=figure><img src=images/first-steps.webp class="figure-img img-fluid rounded"><figcaption class=figure-caption>Getting to this point took longer than I care to admit.</figcaption></figure><figure class=figure><img src=images/printing-bed.webp class="figure-img img-fluid rounded"><figcaption class=figure-caption>The under-carriage of the printing bed. Printed partially in ABS for the parts that are exposed to heat (the ugly beige parts).</figcaption></figure><h2 id=wiring-it-all-up>Wiring it all up</h2><p>Things were coming together, and I finally got to the point where I could
+connect things to each other. Except, I didn&rsquo;t have a controller. Now you might
+remember my initial goal of developing my own controller. At this point I had a
+few months of sobering reality sinking in and I realized that I actually want
+to build a printer that works. So, I gave in and went ahead and bought a RepRap
+controller. To this day I&rsquo;m very grateful that I did this - at that point in
+time I didn&rsquo;t even know what a PID controller was. You could probably guess how
+my controller would have turned out.</p><p>I hooked it all up and was ready for the big eureka moment. It was 1 AM in the
+morning and I was ready to print my first Benchy.</p><figure class=figure><img src=images/wiring.webp class="figure-img img-fluid rounded"><figcaption class=figure-caption>I wouldn&rsquo;t say cable-management is a strong point for me.</figcaption></figure><h2 id=it-worked-like-a-dream>It worked like a dream</h2><p>I turned it on and the first sound it made was an inhuman shriek that&rsquo;s still
+fresh in my memory. The stepper motor drivers were pushing way too much
+current, causing the whole rig to vibrate and scream as if I was torturing it.
+The X-axis stepper motor jumped and rammed the hotend into the side of the
+printer (who needs limit switches wired up this early in a project?). Needless
+to say I was overjoyed that it was alive and well. Fearing that it would
+destroy its own printing bed, the first print happened entirely in mid-air. It
+was glorious (and severely under-extruding as I would later find out).</p><div class="mb-3 embed-responsive embed-responsive-16by9"><iframe class=embed-responsive-item src="https://www.youtube-nocookie.com/embed/U7DQTpvaS9g?rel=0" allowfullscreen></iframe></div><div class="mb-3 embed-responsive embed-responsive-16by9"><iframe class=embed-responsive-item src="https://www.youtube-nocookie.com/embed/FrNkTUN_kyU?rel=0" allowfullscreen></iframe></div><h2 id=countless-hours-of-tuning>Countless hours of tuning</h2><p>This was probably one of the phases where progress was the slowest. At this
+point I had no bed levelling, the Z-axis was constantly becoming skew and I was
+only beginning to learn that 3D printing was actually not such straight-forward
+process. After finally getting the stepper motor current just right, there was
+still the steps per mm, printer limits, bed levelling, Z-axis levelling and
+extrusion speed to figure out. It started out with a measly 1cm cube, moving up
+to the famous calibration cube and finally, Benchy was on the way. It took
+multiple tries before I got the printer to finally stop skipping steps on the
+hull, and then, there it was in all its glory (and printing imperfections). The
+printer still had severe ringing issues, inconsistent extrusion and every now
+and then it was skipping steps. But it was printing (and not catching on fire,
+which was a rather big worry for me at the time).</p><figure class=figure><img src=images/benchy.webp class="figure-img img-fluid rounded"><figcaption class=figure-caption>It didn&rsquo;t even get the chimney done, but I loved it with all my heart.</figcaption></figure><div class="mb-3 embed-responsive embed-responsive-16by9"><iframe class=embed-responsive-item src="https://www.youtube-nocookie.com/embed/gCceIxud9nM?rel=0" allowfullscreen></iframe></div><h2 id=making-it-usable-for-day-to-day-use>Making it usable for day-to-day use</h2><p>At this point the printer was actually becoming somewhat useful. I was able to
+get out basic parts, and I finally started printing parts for the printer <em>on
+itself</em>. It became abundantly clear that I would have start doing some upgrades
+to the printer. Over the coming weeks I performed the following upgrades:</p><ul><li>I switched over to a direct extruder - the Bowden setup was causing too many
+issues and it had inconsistent extruding.</li><li>I changed the Z-axis to use two separate drivers and limit switches. This
+allowed automatic Z-levelling using the wonderful Marlin firmware. Before
+this the Z-axis would constantly become skew, leading to all sorts of weird
+and wonderful printing issues.</li><li>Automatic bed-levelling using a BL Touch sensor. I spent literal hours trying
+to get the bed properly levelled, only to have it become skew after only a
+few days. This lead to prints detaching or coming out wrong.</li><li>A cooling fan attached to the hotend mount which really tidied up the prints
+and helped with bridging.</li><li>A housing for the controller. I consider this an upgrade because it the
+printer was technically working fine without it.</li><li>Added an LCD screen with an SD-card reader, because printing directly from my
+laptop was quickly getting old.</li></ul><h2 id=wrapping-it-all-up>Wrapping it all up</h2><p>It has now been almost two years since that first fateful print, and the
+printer is still going strong. I&rsquo;ve printed through quite a few kilograms of
+filament and some of the parts are starting to show their age, but after all the
+gradual upgrades and tweaks it has become quite reliable. These days I almost
+never have a failed print and the printing quality has stayed relatively good.
+In the end the printer probably ended up costing more than 3 times the price of
+a comparable commercial printer, but if I had to do it again I&rsquo;ll choose the
+DIY route every time. I learned a ton in the process, had a lot of fun and
+printed more Benchies than is probably healthy (I have a giant plastic bag full
+of them just lying around somewhere).</p><p>The printer ended up having close to the original design volume (17cm x 18cm x
+18cm) and overall the print quality is quite good. It can&rsquo;t print very fast
+however, doing so results in ringing or missed steps. I&rsquo;ve printed everything
+from project enclosures to pot handles in PLA, ABS, Wooden filament and even
+flexible TPU.</p><p>For anyone considering building their own printer, I&rsquo;d have to warn you that
+its not going to be a quick build. The fine-tuning process takes forever, and
+hunting down all the myriad of printer issues you&rsquo;ll face is no small
+challenge. However, it taught me more about 3D printing than I would ever have
+learned otherwise and was probably the most fun I&rsquo;ve had working on an
+electronics project in years. If you got this far, thank you for reading! And
+may your Benchies always come out perfectly.</p><figure class=figure><img src=images/printer.webp class="figure-img img-fluid rounded"><figcaption class=figure-caption>What the printer looks like these days.</figcaption></figure><figure class=figure><img src=images/darth-vader.webp class="figure-img img-fluid rounded"><figcaption class=figure-caption><a href=https://www.thingiverse.com/thing:1396307>Thingiverse link</a></figcaption></figure><figure class=figure><img src=images/wooden-print.webp class="figure-img img-fluid rounded"><figcaption class=figure-caption><a href=https://www.thingiverse.com/thing:>Thingiverse link</a></figcaption></figure><figure class=figure><img src=images/octopus.webp class="figure-img img-fluid rounded"></figure></article><aside class="d-none d-xl-block col-xl"><div id=toc><h4 class="mt-5 text-muted">Table of Contents</h4><nav id=TableOfContents><ul><li><a href=#starting-with-the-basic-design>Starting with the basic design</a></li><li><a href=#doing-the-cad-designs>Doing the CAD designs</a></li><li><a href=#printing-the-parts>Printing the parts</a></li><li><a href=#wiring-it-all-up>Wiring it all up</a></li><li><a href=#it-worked-like-a-dream>It worked like a dream</a></li><li><a href=#countless-hours-of-tuning>Countless hours of tuning</a></li><li><a href=#making-it-usable-for-day-to-day-use>Making it usable for day-to-day use</a></li><li><a href=#wrapping-it-all-up>Wrapping it all up</a></li></ul></nav></div></aside></div></div></main><span class="d-md-none text-muted text-center w-100">&copy; 2021 Kobus van Schoor</span></div></div><script src=/js/jquery-3.5.1.slim.min.js></script><script src=/js/bootstrap.bundle.min.js></script><script src=/js/feather.min.js></script><script>feather.replace()</script><script>var toc=$('#TableOfContents').children('ul').addClass('list-group');toc=toc.find('li').addClass('list-group-item'),toc=toc.find('a').addClass('text-dark')</script></body></html>
