@@ -25,10 +25,8 @@ body {
 	top: 0;
 }
 
-.head-img {
-	border-radius: 50%;
-	border: 2px solid #FAFAFA;
-	max-width: 70%;
+.desktop-logo {
+	width: 50%;
 }
 
 .sidebar hr {
