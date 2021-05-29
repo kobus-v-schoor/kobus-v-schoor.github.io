@@ -102,3 +102,22 @@ body {
 	position: sticky;
 	top: 2%;
 }
+
+/* image zoom icon */
+.zoom-link {
+	color: transparent;
+	transition: 0.3s;
+}
+
+.zoom-link:hover {
+	color: #FAFAFA;
+	transition: 0.3s;
+}
+
+.zoom-icon {
+	position: absolute;
+	width: 32px;
+	height: 32px;
+	top: 2%;
+	left: 2%;
+}
