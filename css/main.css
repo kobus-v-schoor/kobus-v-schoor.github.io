@@ -10,9 +10,9 @@ body {
 }
 
 .feather {
-	vertical-align: center;
-	width: 16px;
-	height: 16px;
+	vertical-align: middle;
+	height: 1em;
+	width: 1em;
 	margin-right: 4px;
 }
 
