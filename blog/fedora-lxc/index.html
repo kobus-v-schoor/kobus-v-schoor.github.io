@@ -1,130 +1,24 @@
-<!doctype html><html lang=en>
-<head>
-<script type=application/javascript>var doNotTrack=!1;doNotTrack||(window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)},ga.l=+new Date,ga('create','UA-155995545-2','auto'),ga('send','pageview'))</script>
-<script async src=https://www.google-analytics.com/analytics.js></script>
-<meta charset=utf-8>
-<meta name=viewport content="width=device-width,initial-scale=1,shrink-to-fit=no">
-<meta property="og:title" content="Running unprivileged LXC containers on Fedora">
-<meta property="og:description" content="A complete guide on setting up and running unprivileged containers on Fedora with bind-mounts and SELinux support">
-<meta property="og:type" content="article">
-<meta property="og:url" content="https://kobusvs.co.za/blog/fedora-lxc/"><meta property="article:section" content="blog">
-<meta property="article:published_time" content="2021-12-02T00:00:00+00:00">
-<meta property="article:modified_time" content="2021-12-02T11:27:10+02:00">
-<link rel=icon type=image/svg+xml href=/img/favicon.svg>
-<link rel=stylesheet href=/css/bootstrap.min.css>
-<link rel=stylesheet href=https://kobusvs.co.za/scss/main.min.c94ad7431e3268ae410e15c818c27a1b6b95328608c8f62aea9723732c23df72.css>
-<link rel=stylesheet href=https://kobusvs.co.za/scss/highlight.min.bacff1324e0b5d47142968eba7ff281719a11bfdf151acf99c88f948dadd156c.css>
-<title>Running Unprivileged LXC Containers on Fedora · Kobus van Schoor</title>
-</head>
-<body>
-<nav class="d-md-none navbar navbar-expand flex-column navbar-dark text-light mobile-navbar">
-<a href=https://kobusvs.co.za/ class=navbar-brand>
-<img src=/img/mobile-logo.svg width=30 height=30>
-Kobus van Schoor
-</a>
-<ul class="navbar-nav w-100 d-flex justify-content-around">
-<li class="nav-item text-center">
-<a class=nav-link href=https://kobusvs.co.za/>
-<i data-feather=home></i>
-<br>
-Home
-</a>
-</li>
-<li class="nav-item text-center">
-<a class=nav-link href=https://kobusvs.co.za/resume/>
-<i data-feather=file-text></i>
-<br>
-Resume
-</a>
-</li>
-<li class="nav-item text-center">
-<a class=nav-link href=https://kobusvs.co.za/tags/projects/>
-<i data-feather=cpu></i>
-<br>
-Projects
-</a>
-</li>
-<li class="nav-item text-center">
-<a class=nav-link href=https://kobusvs.co.za/blog/>
-<i data-feather=feather></i>
-<br>
-Blog
-</a>
-</li>
-</ul>
-</nav>
-<div class=container-fluid>
-<div class=row>
-<nav class="d-none d-md-flex col-md-3 col-lg-2 flex-column align-items-start sidebar">
-<div class="text-center mx-auto">
-<a href=https://kobusvs.co.za/>
-<img src=/img/logo.svg class="mt-3 desktop-logo">
-</a>
-<h5 class="align-self-center pt-3">Kobus van Schoor</h5>
-</div>
-<small class="align-self-center mb-3">
-<i class=f-16 data-feather=map-pin></i>Pretoria, South Africa
-</small>
-<span class="align-self-center d-flex flex-row">
-<a href=https://github.com/kobus-v-schoor/ class=social>
-<i data-feather=github></i>
-</a>
-<a href=https://www.linkedin.com/in/kobus-van-schoor class=social>
-<i data-feather=linkedin></i>
-</a>
-<a href=mailto:v.schoor.kobus@gmail.com class=social>
-<i data-feather=mail></i>
-</a>
-</span>
-<hr>
-<a class=sidebar-link href=https://kobusvs.co.za/>
-<i data-feather=home></i>
-Home
-</a>
-<a class=sidebar-link href=https://kobusvs.co.za/resume/>
-<i data-feather=file-text></i>
-Resume
-</a>
-<a class=sidebar-link href=https://kobusvs.co.za/tags/projects/>
-<i data-feather=cpu></i>
-Projects
-</a>
-<a class=sidebar-link href=https://kobusvs.co.za/blog/>
-<i data-feather=feather></i>
-Blog
-</a>
-<small class="mt-auto align-self-center">
-&copy; 2022 Kobus van Schoor
-</small>
-</nav>
-<main class="col-md-9 col-lg-10">
-<div class="container mt-3 mt-xl-5 mb-5">
-<div class=row>
-<article class=col-xl-8>
-<h1>Running unprivileged LXC containers on Fedora</h1>
-<div class="text-muted d-flex flex-column flex-md-row">
-<span class="d-flex align-items-center">
-<i data-feather=calendar></i>2 Dec 2021
-</span>
-<span class="d-flex align-items-center ml-md-2">
-<i data-feather=clock></i>6 minutes
-</span>
-</div>
-<div class="mb-2 text-truncate text-muted">
-<i data-feather=tag></i><a class=text-secondary href=https://kobusvs.co.za/tags/linux/>linux</a>, <a class=text-secondary href=https://kobusvs.co.za/tags/containers/>containers</a>
-</div>
-<hr>
-<p>LXC containers are great - they are an easy way to set up a clean development
+<!doctype html><html lang=en><head><script type=application/javascript>var doNotTrack=!1;doNotTrack||(window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)},ga.l=+new Date,ga("create","UA-155995545-2","auto"),ga("send","pageview"))</script><script async src=https://www.google-analytics.com/analytics.js></script><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1,shrink-to-fit=no"><meta property="og:title" content="Running unprivileged LXC containers on Fedora"><meta property="og:description" content="A complete guide on setting up and running unprivileged containers on Fedora with bind-mounts and SELinux support"><meta property="og:type" content="article"><meta property="og:url" content="https://kobusvs.co.za/blog/fedora-lxc/"><meta property="article:section" content="blog"><meta property="article:published_time" content="2021-12-02T00:00:00+00:00"><meta property="article:modified_time" content="2021-12-02T11:27:10+02:00"><link rel=icon type=image/svg+xml href=/img/favicon.svg><link rel=stylesheet href=/css/bootstrap.min.css><link rel=stylesheet href=https://kobusvs.co.za/scss/main.min.c94ad7431e3268ae410e15c818c27a1b6b95328608c8f62aea9723732c23df72.css><link rel=stylesheet href=https://kobusvs.co.za/scss/highlight.min.bacff1324e0b5d47142968eba7ff281719a11bfdf151acf99c88f948dadd156c.css><title>Running Unprivileged LXC Containers on Fedora · Kobus van Schoor</title></head><body><nav class="d-md-none navbar navbar-expand flex-column navbar-dark text-light mobile-navbar"><a href=https://kobusvs.co.za/ class=navbar-brand><img src=/img/mobile-logo.svg width=30 height=30>
+Kobus van Schoor</a><ul class="navbar-nav w-100 d-flex justify-content-around"><li class="nav-item text-center"><a class=nav-link href=https://kobusvs.co.za/><i data-feather=home></i><br>Home</a></li><li class="nav-item text-center"><a class=nav-link href=https://kobusvs.co.za/resume/><i data-feather=file-text></i><br>Resume</a></li><li class="nav-item text-center"><a class=nav-link href=https://kobusvs.co.za/tags/projects/><i data-feather=cpu></i><br>Projects</a></li><li class="nav-item text-center"><a class=nav-link href=https://kobusvs.co.za/blog/><i data-feather=feather></i><br>Blog</a></li></ul></nav><div class=container-fluid><div class=row><nav class="d-none d-md-flex col-md-3 col-lg-2 flex-column align-items-start sidebar"><div class="text-center mx-auto"><a href=https://kobusvs.co.za/><img src=/img/logo.svg class="mt-3 desktop-logo"></a><h5 class="align-self-center pt-3">Kobus van Schoor</h5></div><small class="align-self-center mb-3"><i class=f-16 data-feather=map-pin></i>Pretoria, South Africa</small>
+<span class="align-self-center d-flex flex-row"><a href=https://github.com/kobus-v-schoor/ class=social><i data-feather=github></i></a>
+<a href=https://www.linkedin.com/in/kobus-van-schoor class=social><i data-feather=linkedin></i></a>
+<a href=mailto:v.schoor.kobus@gmail.com class=social><i data-feather=mail></i></a></span><hr><a class=sidebar-link href=https://kobusvs.co.za/><i data-feather=home></i>
+Home</a>
+<a class=sidebar-link href=https://kobusvs.co.za/resume/><i data-feather=file-text></i>
+Resume</a>
+<a class=sidebar-link href=https://kobusvs.co.za/tags/projects/><i data-feather=cpu></i>
+Projects</a>
+<a class=sidebar-link href=https://kobusvs.co.za/blog/><i data-feather=feather></i>
+Blog</a>
+<small class="mt-auto align-self-center">&copy; 2022 Kobus van Schoor</small></nav><main class="col-md-9 col-lg-10"><div class="container mt-3 mt-xl-5 mb-5"><div class=row><article class=col-xl-8><h1>Running unprivileged LXC containers on Fedora</h1><div class="text-muted d-flex flex-column flex-md-row"><span class="d-flex align-items-center"><i data-feather=calendar></i>2 Dec 2021</span>
+<span class="d-flex align-items-center ml-md-2"><i data-feather=clock></i>6 minutes</span></div><div class="mb-2 text-truncate text-muted"><i data-feather=tag></i><a class=text-secondary href=https://kobusvs.co.za/tags/linux/>linux</a>, <a class=text-secondary href=https://kobusvs.co.za/tags/containers/>containers</a></div><hr><p>LXC containers are great - they are an easy way to set up a clean development
 or testing environment, lightweight, and simple to maintain. Unfortunately,
 running unprivileged containers (i.e. not running them as root, which is
 inconvenient and generally not a good idea) doesn&rsquo;t work out-of-the box on
-Fedora (but to be fair, the same goes for Debian and friends).</p>
-<p>At the end of this guide you should be able to run unprivileged containers
+Fedora (but to be fair, the same goes for Debian and friends).</p><p>At the end of this guide you should be able to run unprivileged containers
 without needing to mess with SELinux (which strangely the Wiki suggests you
 need to disable) with the option to add bind mounts in your container to share
-files between your home folder and the container&rsquo;s filesystem.</p>
-<h2 id=some-basics-first>Some basics first</h2>
-<p>Before we continue we just need to clear up some basics. By running containers
+files between your home folder and the container&rsquo;s filesystem.</p><h2 id=some-basics-first>Some basics first</h2><p>Before we continue we just need to clear up some basics. By running containers
 in unprivileged mode, it means that you will never be making use of root
 privileges on your host machine. They will be started as your normal user
 account - for this to work LXC will make use of something called UID
@@ -134,172 +28,106 @@ This has the cool benefit that if something were to break out of the container,
 it will be running as some arbitrary, unprivileged UID on the host and probably
 won&rsquo;t be able to do much. The other cool thing is that this allows your
 unprivileged normal user account to start, stop and manage containers without
-ever touching <code>sudo</code>.</p>
-<h2 id=installation>Installation</h2>
-<p>I&rsquo;m writing this guide on Fedora 34, but it should also work on other versions.
+ever touching <code>sudo</code>.</p><h2 id=installation>Installation</h2><p>I&rsquo;m writing this guide on Fedora 34, but it should also work on other versions.
 Firstly, install LXC and its templates (templates makes creating containers
-much easier):</p>
-<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-shell data-lang=shell>sudo dnf install lxc lxc-templates
-</code></pre></div><h2 id=setting-up-the-networking>Setting up the networking</h2>
-<div class="alert alert-info">
-<i data-feather=flag></i>
+much easier):</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-shell data-lang=shell><span style=display:flex><span>sudo dnf install lxc lxc-templates
+</span></span></code></pre></div><h2 id=setting-up-the-networking>Setting up the networking</h2><div class="alert alert-info"><i data-feather=flag></i>
 On Fedora 35, the default LXC bridge&rsquo;s name was changed to <code>lxcbr0</code> - so be
-sure to change <code>virbr0</code> to <code>lxcbr0</code> in all of the configuration options below.
-</div>
-<p>Next you&rsquo;ll need to allow your user access to the network bridge created by the
-LXC networking service. To do so, run the following:</p>
-<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-shell data-lang=shell><span style=color:#6272a4># allow user to access network bridge</span>
-<span style=color:#6272a4># see the note regarding F35 above</span>
-sudo tee /etc/lxc/lxc-usernet <span style=color:#f1fa8c>&lt;&lt;EOF
-</span><span style=color:#f1fa8c>$USER veth virbr0 10
-</span><span style=color:#f1fa8c>EOF</span>
-
-<span style=color:#6272a4># restart the lxc network service</span>
-sudo systemctl restart lxc-net
-</code></pre></div><p>With these two commands you&rsquo;ve allowed your user account to create 10 network
+sure to change <code>virbr0</code> to <code>lxcbr0</code> in all of the configuration options below.</div><p>Next you&rsquo;ll need to allow your user access to the network bridge created by the
+LXC networking service. To do so, run the following:</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-shell data-lang=shell><span style=display:flex><span><span style=color:#6272a4># allow user to access network bridge</span>
+</span></span><span style=display:flex><span><span style=color:#6272a4># see the note regarding F35 above</span>
+</span></span><span style=display:flex><span>sudo tee /etc/lxc/lxc-usernet <span style=color:#f1fa8c>&lt;&lt;EOF
+</span></span></span><span style=display:flex><span><span style=color:#f1fa8c>$USER veth virbr0 10
+</span></span></span><span style=display:flex><span><span style=color:#f1fa8c>EOF</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#6272a4># restart the lxc network service</span>
+</span></span><span style=display:flex><span>sudo systemctl restart lxc-net
+</span></span></code></pre></div><p>With these two commands you&rsquo;ve allowed your user account to create 10 network
 bridges on the default LXC network device <code>virbr0</code>. Without this your
 containers won&rsquo;t be able to attach to the network bridge and they won&rsquo;t have
-network connectivity.</p>
-<h2 id=updating-the-firewall-rules-on-f35>Updating the firewall rules on F35</h2>
-<p>This step is only required if you&rsquo;re running Fedora 35 or newer. By default,
+network connectivity.</p><h2 id=updating-the-firewall-rules-on-f35>Updating the firewall rules on F35</h2><p>This step is only required if you&rsquo;re running Fedora 35 or newer. By default,
 <code>firewalld</code> will block your containers from obtaining DHCP addresses. To fix
-this you&rsquo;ll need to add the LXC bridge to <code>firewalld</code>&rsquo;s trusted zone.</p>
-<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-shell data-lang=shell>sudo firewall-cmd --zone<span style=color:#ff79c6>=</span>trusted --change-interface<span style=color:#ff79c6>=</span>lxcbr0 --permanent
-sudo firewall-cmd --reload
-</code></pre></div><h2 id=configuring-lxc>Configuring LXC</h2>
-<p>Finally we also need to tell LXC to use the correct network interface, and to
+this you&rsquo;ll need to add the LXC bridge to <code>firewalld</code>&rsquo;s trusted zone.</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-shell data-lang=shell><span style=display:flex><span>sudo firewall-cmd --zone<span style=color:#ff79c6>=</span>trusted --change-interface<span style=color:#ff79c6>=</span>lxcbr0 --permanent
+</span></span><span style=display:flex><span>sudo firewall-cmd --reload
+</span></span></code></pre></div><h2 id=configuring-lxc>Configuring LXC</h2><p>Finally we also need to tell LXC to use the correct network interface, and to
 set up the correct UID and GID mappings. You can add the following to the
 system-wide LXC config (<code>/etc/lxc/default.conf</code>) however I prefer using the one
 in my home folder so that I can check it into my
-<a href=https://github.com/kobus-v-schoor/dotgit>dotfiles</a>.</p>
-<p>Add the following to <code>~/.config/lxc/default.conf</code> (you might need to create the
-folders):</p>
-<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-text data-lang=text># default networking
-lxc.net.0.type = veth
-# remember to update this to lxcbr0 on F35 and above
-lxc.net.0.link = virbr0
-lxc.net.0.flags = up
-lxc.net.0.hwaddr = 00:16:3e:xx:xx:xx
-
-# uid and gid mapping - all the ids, except 1000, are mapped to an
-# unpriviledged range on the host. 1000 is kept so that filesharing through
-# bind mounts is possible
-lxc.idmap = u 0 100000 1000
-lxc.idmap = u 1000 1000 1
-lxc.idmap = u 1001 101000 64536
-
-lxc.idmap = g 0 100000 1000
-lxc.idmap = g 1000 1000 1
-lxc.idmap = g 1001 101000 64536
-</code></pre></div><p>One thing to note is the UID mapping ranges. All the container&rsquo;s UIDs, except
+<a href=https://github.com/kobus-v-schoor/dotgit>dotfiles</a>.</p><p>Add the following to <code>~/.config/lxc/default.conf</code> (you might need to create the
+folders):</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-text data-lang=text><span style=display:flex><span># default networking
+</span></span><span style=display:flex><span>lxc.net.0.type = veth
+</span></span><span style=display:flex><span># remember to update this to lxcbr0 on F35 and above
+</span></span><span style=display:flex><span>lxc.net.0.link = virbr0
+</span></span><span style=display:flex><span>lxc.net.0.flags = up
+</span></span><span style=display:flex><span>lxc.net.0.hwaddr = 00:16:3e:xx:xx:xx
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span># uid and gid mapping - all the ids, except 1000, are mapped to an
+</span></span><span style=display:flex><span># unpriviledged range on the host. 1000 is kept so that filesharing through
+</span></span><span style=display:flex><span># bind mounts is possible
+</span></span><span style=display:flex><span>lxc.idmap = u 0 100000 1000
+</span></span><span style=display:flex><span>lxc.idmap = u 1000 1000 1
+</span></span><span style=display:flex><span>lxc.idmap = u 1001 101000 64536
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>lxc.idmap = g 0 100000 1000
+</span></span><span style=display:flex><span>lxc.idmap = g 1000 1000 1
+</span></span><span style=display:flex><span>lxc.idmap = g 1001 101000 64536
+</span></span></code></pre></div><p>One thing to note is the UID mapping ranges. All the container&rsquo;s UIDs, except
 for 1000, is mapped to UIDs >100000. However UID 1000 is mapped to 1000 on the
 host - this is to allow read-write bind mounts between your home folder and the
 container&rsquo;s default user (not root! A normal user account that you created -
 see the next section). Your account should have an UID of 1000 by default. If
-not, you&rsquo;ll need to slightly adjust the above to fit your account&rsquo;s UID (<code>man lxc.container.conf</code>).</p>
-<h2 id=creating-the-container>Creating the container</h2>
-<p>At this point you should be able to create and run a container. To do so run
-the following:</p>
-<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-shell data-lang=shell><span style=color:#6272a4># here because the keyserver used by LXC no longer exists</span>
-<span style=color:#8be9fd;font-style:italic>export</span> <span style=color:#8be9fd;font-style:italic>DOWNLOAD_KEYSERVER</span><span style=color:#ff79c6>=</span>keys.openpgp.org
-<span style=color:#6272a4># create the container - doesn&#39;t need to be fedora</span>
-lxc-create -t download -n my_container -- -d fedora -r <span style=color:#bd93f9>34</span> -a amd64
-</code></pre></div><p>If everything went well you should be presented with something like the
-following:</p>
-<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-text data-lang=text>Setting up the GPG keyring
-Downloading the image index
-Downloading the rootfs
-Downloading the metadata
-The image cache is now ready
-Unpacking the rootfs
-
----
-You just created a Fedora 34 x86_64 (20210805_20:33) container.
-</code></pre></div><p>Start the container, and create a normal user account to use:</p>
-<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=color:#6272a4># start the container</span>
-lxc-start my_container
-<span style=color:#6272a4># attach to it</span>
-lxc-attach my_container
-
-<span style=color:#6272a4>## we&#39;re now inside the container as the root user</span>
-
-<span style=color:#6272a4># create a normal user and set a password</span>
-useradd -mG wheel -s /usr/bin/bash my_user
-passwd my_user
-<span style=color:#6272a4># log in as the normal user</span>
-su my_user
-<span style=color:#6272a4># create a folder in their home folder</span>
-mkdir ~/test
-<span style=color:#6272a4># log out of the normal user</span>
-<span style=color:#8be9fd;font-style:italic>exit</span>
-<span style=color:#6272a4># exit the container</span>
-<span style=color:#8be9fd;font-style:italic>exit</span>
-
-<span style=color:#6272a4>## we&#39;re now back on the host</span>
-
-<span style=color:#6272a4># stop the container</span>
-lxc-stop my_container
-</code></pre></div><p>We created the test folder so that we can set up a bind-mount, as explained in
-the next section.</p>
-<h2 id=bind-mounting-folders-from-the-host-to-the-container>Bind-mounting folders from the host to the container</h2>
-<p>Using bind-mounts comes in very handy, for example mounting your code directory
+not, you&rsquo;ll need to slightly adjust the above to fit your account&rsquo;s UID (<code>man lxc.container.conf</code>).</p><h2 id=creating-the-container>Creating the container</h2><p>At this point you should be able to create and run a container. To do so run
+the following:</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-shell data-lang=shell><span style=display:flex><span><span style=color:#6272a4># here because the keyserver used by LXC no longer exists</span>
+</span></span><span style=display:flex><span><span style=color:#8be9fd;font-style:italic>export</span> <span style=color:#8be9fd;font-style:italic>DOWNLOAD_KEYSERVER</span><span style=color:#ff79c6>=</span>keys.openpgp.org
+</span></span><span style=display:flex><span><span style=color:#6272a4># create the container - doesn&#39;t need to be fedora</span>
+</span></span><span style=display:flex><span>lxc-create -t download -n my_container -- -d fedora -r <span style=color:#bd93f9>34</span> -a amd64
+</span></span></code></pre></div><p>If everything went well you should be presented with something like the
+following:</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-text data-lang=text><span style=display:flex><span>Setting up the GPG keyring
+</span></span><span style=display:flex><span>Downloading the image index
+</span></span><span style=display:flex><span>Downloading the rootfs
+</span></span><span style=display:flex><span>Downloading the metadata
+</span></span><span style=display:flex><span>The image cache is now ready
+</span></span><span style=display:flex><span>Unpacking the rootfs
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>---
+</span></span><span style=display:flex><span>You just created a Fedora 34 x86_64 (20210805_20:33) container.
+</span></span></code></pre></div><p>Start the container, and create a normal user account to use:</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span><span style=color:#6272a4># start the container</span>
+</span></span><span style=display:flex><span>lxc-start my_container
+</span></span><span style=display:flex><span><span style=color:#6272a4># attach to it</span>
+</span></span><span style=display:flex><span>lxc-attach my_container
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#6272a4>## we&#39;re now inside the container as the root user</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#6272a4># create a normal user and set a password</span>
+</span></span><span style=display:flex><span>useradd -mG wheel -s /usr/bin/bash my_user
+</span></span><span style=display:flex><span>passwd my_user
+</span></span><span style=display:flex><span><span style=color:#6272a4># log in as the normal user</span>
+</span></span><span style=display:flex><span>su my_user
+</span></span><span style=display:flex><span><span style=color:#6272a4># create a folder in their home folder</span>
+</span></span><span style=display:flex><span>mkdir ~/test
+</span></span><span style=display:flex><span><span style=color:#6272a4># log out of the normal user</span>
+</span></span><span style=display:flex><span><span style=color:#8be9fd;font-style:italic>exit</span>
+</span></span><span style=display:flex><span><span style=color:#6272a4># exit the container</span>
+</span></span><span style=display:flex><span><span style=color:#8be9fd;font-style:italic>exit</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#6272a4>## we&#39;re now back on the host</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#6272a4># stop the container</span>
+</span></span><span style=display:flex><span>lxc-stop my_container
+</span></span></code></pre></div><p>We created the test folder so that we can set up a bind-mount, as explained in
+the next section.</p><h2 id=bind-mounting-folders-from-the-host-to-the-container>Bind-mounting folders from the host to the container</h2><p>Using bind-mounts comes in very handy, for example mounting your code directory
 (which is on the host) to inside the container. Since the UID mappings have
 already been set up you just need to add the following to your container config
 file in
-<code>~/.local/share/lxc/my_container/config</code>:</p>
-<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-text data-lang=text>lxc.mount.entry = /home/kobus/test home/my_user/test none bind 0 0
-</code></pre></div><p>A few things to note here:</p>
-<ul>
-<li>The first part of the line is the absolute path to the folder on the host
-system (my username is <code>kobus</code>, be sure to adjust it accordingly).</li>
-<li>The second part is the path relative to the container&rsquo;s rootfs - i.e. just
-make sure to omit the leading slash <code>/</code>.</li>
-<li>You can add mounting options instead of the <code>none</code>. For instance, this can be
-used to make the mount read-only.</li>
-</ul>
-<p>Close and save the file, and that&rsquo;s it! If you start your container again the
+<code>~/.local/share/lxc/my_container/config</code>:</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-text data-lang=text><span style=display:flex><span>lxc.mount.entry = /home/kobus/test home/my_user/test none bind 0 0
+</span></span></code></pre></div><p>A few things to note here:</p><ul><li>The first part of the line is the absolute path to the folder on the host
+system (my username is <code>kobus</code>, be sure to adjust it accordingly).</li><li>The second part is the path relative to the container&rsquo;s rootfs - i.e. just
+make sure to omit the leading slash <code>/</code>.</li><li>You can add mounting options instead of the <code>none</code>. For instance, this can be
+used to make the mount read-only.</li></ul><p>Close and save the file, and that&rsquo;s it! If you start your container again the
 bind mount should be up, allowing you to easily share files between your host
-and container.</p>
-<hr>
-<footer class=text-center>
-<small class=text-muted>
-<i data-feather=git-commit></i> 9fee12d
-</small>
-<small class="ml-2 text-muted">
-<i data-feather=package></i> 0.92.2
-</small>
-</footer>
-</article>
-<aside class="d-none d-xl-block col-xl">
-<div id=toc>
-<h4 class="mt-5 text-muted">Table of Contents</h4>
-<nav id=TableOfContents>
-<ul>
-<li><a href=#some-basics-first>Some basics first</a></li>
-<li><a href=#installation>Installation</a></li>
-<li><a href=#setting-up-the-networking>Setting up the networking</a></li>
-<li><a href=#updating-the-firewall-rules-on-f35>Updating the firewall rules on F35</a></li>
-<li><a href=#configuring-lxc>Configuring LXC</a></li>
-<li><a href=#creating-the-container>Creating the container</a></li>
-<li><a href=#bind-mounting-folders-from-the-host-to-the-container>Bind-mounting folders from the host to the container</a></li>
-</ul>
-</nav>
-</div>
-</aside>
-</div>
-</div>
-</main>
-<span class="d-md-none text-muted text-center w-100">
-&copy; 2022 Kobus van Schoor
-</span>
-</div>
-</div>
-<script src=/js/jquery-3.5.1.slim.min.js></script>
+and container.</p><hr><footer class=text-center><small class=text-muted><i data-feather=git-commit></i> 9fee12d</small>
+<small class="ml-2 text-muted"><i data-feather=package></i> 0.101.0</small></footer></article><aside class="d-none d-xl-block col-xl"><div id=toc><h4 class="mt-5 text-muted">Table of Contents</h4><nav id=TableOfContents><ul><li><a href=#some-basics-first>Some basics first</a></li><li><a href=#installation>Installation</a></li><li><a href=#setting-up-the-networking>Setting up the networking</a></li><li><a href=#updating-the-firewall-rules-on-f35>Updating the firewall rules on F35</a></li><li><a href=#configuring-lxc>Configuring LXC</a></li><li><a href=#creating-the-container>Creating the container</a></li><li><a href=#bind-mounting-folders-from-the-host-to-the-container>Bind-mounting folders from the host to the container</a></li></ul></nav></div></aside></div></div></main><span class="d-md-none text-muted text-center w-100">&copy; 2022 Kobus van Schoor</span></div></div><script src=/js/jquery-3.5.1.slim.min.js></script>
 <script src=/js/bootstrap.bundle.min.js></script>
 <script src=/js/feather.min.js></script>
-<script>feather.replace()</script>
-<script>var toc=$('#TableOfContents').children('ul').addClass('list-group');toc=toc.find('li').addClass('list-group-item'),toc=toc.find('a').addClass('text-dark')</script>
-<script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
-<script id=MathJax-script async src=https://cdn.jsdelivr.net/npm/mathjax@3.0.1/es5/tex-mml-chtml.js></script>
-</body>
-</html>
+<script>feather.replace()</script><script>var toc=$("#TableOfContents").children("ul").addClass("list-group"),toc=toc.find("li").addClass("list-group-item"),toc=toc.find("a").addClass("text-dark")</script><script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+<script id=MathJax-script async src=https://cdn.jsdelivr.net/npm/mathjax@3.0.1/es5/tex-mml-chtml.js></script></body></html>

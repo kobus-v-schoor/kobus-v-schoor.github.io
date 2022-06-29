@@ -1,555 +1,279 @@
-<!doctype html><html lang=en>
-<head>
-<script type=application/javascript>var doNotTrack=!1;doNotTrack||(window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)},ga.l=+new Date,ga('create','UA-155995545-2','auto'),ga('send','pageview'))</script>
-<script async src=https://www.google-analytics.com/analytics.js></script>
-<meta charset=utf-8>
-<meta name=viewport content="width=device-width,initial-scale=1,shrink-to-fit=no">
-<meta property="og:title" content="Searching text in Django models">
-<meta property="og:description" content="Fast and flexible and text searching of multiple model fields in Django">
-<meta property="og:type" content="article">
-<meta property="og:url" content="https://kobusvs.co.za/blog/django-text-search/"><meta property="article:section" content="blog">
-<meta property="article:published_time" content="2021-02-25T16:39:01+02:00">
-<meta property="article:modified_time" content="2021-02-28T12:04:15+02:00">
-<link rel=icon type=image/svg+xml href=/img/favicon.svg>
-<link rel=stylesheet href=/css/bootstrap.min.css>
-<link rel=stylesheet href=https://kobusvs.co.za/scss/main.min.c94ad7431e3268ae410e15c818c27a1b6b95328608c8f62aea9723732c23df72.css>
-<link rel=stylesheet href=https://kobusvs.co.za/scss/highlight.min.bacff1324e0b5d47142968eba7ff281719a11bfdf151acf99c88f948dadd156c.css>
-<title>Searching Text in Django Models · Kobus van Schoor</title>
-</head>
-<body>
-<nav class="d-md-none navbar navbar-expand flex-column navbar-dark text-light mobile-navbar">
-<a href=https://kobusvs.co.za/ class=navbar-brand>
-<img src=/img/mobile-logo.svg width=30 height=30>
-Kobus van Schoor
-</a>
-<ul class="navbar-nav w-100 d-flex justify-content-around">
-<li class="nav-item text-center">
-<a class=nav-link href=https://kobusvs.co.za/>
-<i data-feather=home></i>
-<br>
-Home
-</a>
-</li>
-<li class="nav-item text-center">
-<a class=nav-link href=https://kobusvs.co.za/resume/>
-<i data-feather=file-text></i>
-<br>
-Resume
-</a>
-</li>
-<li class="nav-item text-center">
-<a class=nav-link href=https://kobusvs.co.za/tags/projects/>
-<i data-feather=cpu></i>
-<br>
-Projects
-</a>
-</li>
-<li class="nav-item text-center">
-<a class=nav-link href=https://kobusvs.co.za/blog/>
-<i data-feather=feather></i>
-<br>
-Blog
-</a>
-</li>
-</ul>
-</nav>
-<div class=container-fluid>
-<div class=row>
-<nav class="d-none d-md-flex col-md-3 col-lg-2 flex-column align-items-start sidebar">
-<div class="text-center mx-auto">
-<a href=https://kobusvs.co.za/>
-<img src=/img/logo.svg class="mt-3 desktop-logo">
-</a>
-<h5 class="align-self-center pt-3">Kobus van Schoor</h5>
-</div>
-<small class="align-self-center mb-3">
-<i class=f-16 data-feather=map-pin></i>Pretoria, South Africa
-</small>
-<span class="align-self-center d-flex flex-row">
-<a href=https://github.com/kobus-v-schoor/ class=social>
-<i data-feather=github></i>
-</a>
-<a href=https://www.linkedin.com/in/kobus-van-schoor class=social>
-<i data-feather=linkedin></i>
-</a>
-<a href=mailto:v.schoor.kobus@gmail.com class=social>
-<i data-feather=mail></i>
-</a>
-</span>
-<hr>
-<a class=sidebar-link href=https://kobusvs.co.za/>
-<i data-feather=home></i>
-Home
-</a>
-<a class=sidebar-link href=https://kobusvs.co.za/resume/>
-<i data-feather=file-text></i>
-Resume
-</a>
-<a class=sidebar-link href=https://kobusvs.co.za/tags/projects/>
-<i data-feather=cpu></i>
-Projects
-</a>
-<a class=sidebar-link href=https://kobusvs.co.za/blog/>
-<i data-feather=feather></i>
-Blog
-</a>
-<small class="mt-auto align-self-center">
-&copy; 2022 Kobus van Schoor
-</small>
-</nav>
-<main class="col-md-9 col-lg-10">
-<div class="container mt-3 mt-xl-5 mb-5">
-<div class=row>
-<article class=col-xl-8>
-<h1>Searching text in Django models</h1>
-<div class="text-muted d-flex flex-column flex-md-row">
-<span class="d-flex align-items-center">
-<i data-feather=calendar></i>25 Feb 2021
-</span>
-<span class="d-flex align-items-center ml-md-2">
-<i data-feather=clock></i>9 minutes
-</span>
-</div>
-<div class="mb-2 text-truncate text-muted">
-<i data-feather=tag></i><a class=text-secondary href=https://kobusvs.co.za/tags/django/>django</a>, <a class=text-secondary href=https://kobusvs.co.za/tags/programming/>programming</a>, <a class=text-secondary href=https://kobusvs.co.za/tags/algorithms/>algorithms</a>
-</div>
-<hr>
-<p>The need to perform text searches is something that often pops up in web
+<!doctype html><html lang=en><head><script type=application/javascript>var doNotTrack=!1;doNotTrack||(window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)},ga.l=+new Date,ga("create","UA-155995545-2","auto"),ga("send","pageview"))</script><script async src=https://www.google-analytics.com/analytics.js></script><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1,shrink-to-fit=no"><meta property="og:title" content="Searching text in Django models"><meta property="og:description" content="Fast and flexible and text searching of multiple model fields in Django"><meta property="og:type" content="article"><meta property="og:url" content="https://kobusvs.co.za/blog/django-text-search/"><meta property="article:section" content="blog"><meta property="article:published_time" content="2021-02-25T16:39:01+02:00"><meta property="article:modified_time" content="2021-02-28T12:04:15+02:00"><link rel=icon type=image/svg+xml href=/img/favicon.svg><link rel=stylesheet href=/css/bootstrap.min.css><link rel=stylesheet href=https://kobusvs.co.za/scss/main.min.c94ad7431e3268ae410e15c818c27a1b6b95328608c8f62aea9723732c23df72.css><link rel=stylesheet href=https://kobusvs.co.za/scss/highlight.min.bacff1324e0b5d47142968eba7ff281719a11bfdf151acf99c88f948dadd156c.css><title>Searching Text in Django Models · Kobus van Schoor</title></head><body><nav class="d-md-none navbar navbar-expand flex-column navbar-dark text-light mobile-navbar"><a href=https://kobusvs.co.za/ class=navbar-brand><img src=/img/mobile-logo.svg width=30 height=30>
+Kobus van Schoor</a><ul class="navbar-nav w-100 d-flex justify-content-around"><li class="nav-item text-center"><a class=nav-link href=https://kobusvs.co.za/><i data-feather=home></i><br>Home</a></li><li class="nav-item text-center"><a class=nav-link href=https://kobusvs.co.za/resume/><i data-feather=file-text></i><br>Resume</a></li><li class="nav-item text-center"><a class=nav-link href=https://kobusvs.co.za/tags/projects/><i data-feather=cpu></i><br>Projects</a></li><li class="nav-item text-center"><a class=nav-link href=https://kobusvs.co.za/blog/><i data-feather=feather></i><br>Blog</a></li></ul></nav><div class=container-fluid><div class=row><nav class="d-none d-md-flex col-md-3 col-lg-2 flex-column align-items-start sidebar"><div class="text-center mx-auto"><a href=https://kobusvs.co.za/><img src=/img/logo.svg class="mt-3 desktop-logo"></a><h5 class="align-self-center pt-3">Kobus van Schoor</h5></div><small class="align-self-center mb-3"><i class=f-16 data-feather=map-pin></i>Pretoria, South Africa</small>
+<span class="align-self-center d-flex flex-row"><a href=https://github.com/kobus-v-schoor/ class=social><i data-feather=github></i></a>
+<a href=https://www.linkedin.com/in/kobus-van-schoor class=social><i data-feather=linkedin></i></a>
+<a href=mailto:v.schoor.kobus@gmail.com class=social><i data-feather=mail></i></a></span><hr><a class=sidebar-link href=https://kobusvs.co.za/><i data-feather=home></i>
+Home</a>
+<a class=sidebar-link href=https://kobusvs.co.za/resume/><i data-feather=file-text></i>
+Resume</a>
+<a class=sidebar-link href=https://kobusvs.co.za/tags/projects/><i data-feather=cpu></i>
+Projects</a>
+<a class=sidebar-link href=https://kobusvs.co.za/blog/><i data-feather=feather></i>
+Blog</a>
+<small class="mt-auto align-self-center">&copy; 2022 Kobus van Schoor</small></nav><main class="col-md-9 col-lg-10"><div class="container mt-3 mt-xl-5 mb-5"><div class=row><article class=col-xl-8><h1>Searching text in Django models</h1><div class="text-muted d-flex flex-column flex-md-row"><span class="d-flex align-items-center"><i data-feather=calendar></i>25 Feb 2021</span>
+<span class="d-flex align-items-center ml-md-2"><i data-feather=clock></i>9 minutes</span></div><div class="mb-2 text-truncate text-muted"><i data-feather=tag></i><a class=text-secondary href=https://kobusvs.co.za/tags/django/>django</a>, <a class=text-secondary href=https://kobusvs.co.za/tags/programming/>programming</a>, <a class=text-secondary href=https://kobusvs.co.za/tags/algorithms/>algorithms</a></div><hr><p>The need to perform text searches is something that often pops up in web
 applications, so much so that there are many projects dedicated solely to
 solving this problem. In this post I will cover some approaches to perform
 text searches in your own Django app without resorting to database-specific
 functionality or external searching solutions. At the end of this post you&rsquo;ll
-have a flexible search solution that can order search results by relevance.</p>
-<p>Let&rsquo;s assume that you have the following model that you want to allow users to
-search through:</p>
-<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python><span style=color:#ff79c6>class</span> <span style=color:#50fa7b>Product</span>(models<span style=color:#ff79c6>.</span>Model):
-    name <span style=color:#ff79c6>=</span> models<span style=color:#ff79c6>.</span>CharField(max_length<span style=color:#ff79c6>=</span><span style=color:#bd93f9>100</span>)
-    description <span style=color:#ff79c6>=</span> models<span style=color:#ff79c6>.</span>TextField()
-</code></pre></div><p>Throughout this post we&rsquo;ll be implementing our search function in a function
+have a flexible search solution that can order search results by relevance.</p><p>Let&rsquo;s assume that you have the following model that you want to allow users to
+search through:</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python><span style=display:flex><span><span style=color:#ff79c6>class</span> <span style=color:#50fa7b>Product</span>(models<span style=color:#ff79c6>.</span>Model):
+</span></span><span style=display:flex><span>    name <span style=color:#ff79c6>=</span> models<span style=color:#ff79c6>.</span>CharField(max_length<span style=color:#ff79c6>=</span><span style=color:#bd93f9>100</span>)
+</span></span><span style=display:flex><span>    description <span style=color:#ff79c6>=</span> models<span style=color:#ff79c6>.</span>TextField()
+</span></span></code></pre></div><p>Throughout this post we&rsquo;ll be implementing our search function in a function
 named <code>search</code> which takes one string argument representing the search query.
 Ultimately this function will also sort the search results, but we&rsquo;ll get to
-that later on.</p>
-<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python><span style=color:#ff79c6>def</span> <span style=color:#50fa7b>search</span>(query):
-    <span style=color:#ff79c6>...</span>
-    <span style=color:#ff79c6>return</span> products
-</code></pre></div><p>Finally, we assume that this is the current products loaded in our database:</p>
-<table class="table table-sm table-striped table-bordered">
-<thead>
-<tr>
-<th>ID</th>
-<th>Name</th>
-<th>Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>1</td>
-<td>Flour</td>
-<td>Add sugar and you&rsquo;ve got a cake</td>
-</tr>
-<tr>
-<td>2</td>
-<td>Brown Sugar</td>
-<td>World&rsquo;s best brown sugar</td>
-</tr>
-<tr>
-<td>3</td>
-<td>Icing Sugar</td>
-<td>Also known as frosting or powdered sugar</td>
-</tr>
-<tr>
-<td>4</td>
-<td>Glucose Liquid</td>
-<td>Clear sugar syrup</td>
-</tr>
-<tr>
-<td>5</td>
-<td>Cupcake</td>
-<td>Because usual sized cakes are too expensive</td>
-</tr>
-</tbody>
-</table>
-<p><strong>Disclaimer:</strong> I&rsquo;m not a baker, so don&rsquo;t take any baking advice from this
-post.</p>
-<h2 id=approach-1-just-plain-__icontains>Approach 1: Just plain <code>__icontains</code></h2>
-<p>This is the easiest approach, and works fine when you&rsquo;re searching very
+that later on.</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python><span style=display:flex><span><span style=color:#ff79c6>def</span> <span style=color:#50fa7b>search</span>(query):
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>...</span>
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>return</span> products
+</span></span></code></pre></div><p>Finally, we assume that this is the current products loaded in our database:</p><table class="table table-sm table-striped table-bordered"><thead><tr><th>ID</th><th>Name</th><th>Description</th></tr></thead><tbody><tr><td>1</td><td>Flour</td><td>Add sugar and you&rsquo;ve got a cake</td></tr><tr><td>2</td><td>Brown Sugar</td><td>World&rsquo;s best brown sugar</td></tr><tr><td>3</td><td>Icing Sugar</td><td>Also known as frosting or powdered sugar</td></tr><tr><td>4</td><td>Glucose Liquid</td><td>Clear sugar syrup</td></tr><tr><td>5</td><td>Cupcake</td><td>Because usual sized cakes are too expensive</td></tr></tbody></table><p><strong>Disclaimer:</strong> I&rsquo;m not a baker, so don&rsquo;t take any baking advice from this
+post.</p><h2 id=approach-1-just-plain-__icontains>Approach 1: Just plain <code>__icontains</code></h2><p>This is the easiest approach, and works fine when you&rsquo;re searching very
 specific single-word terms (e.g. part numbers, barcodes, etc.). The search
-function might look something like this:</p>
-<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python><span style=color:#ff79c6>def</span> <span style=color:#50fa7b>search</span>(query):
-    <span style=color:#ff79c6>return</span> Product<span style=color:#ff79c6>.</span>objects<span style=color:#ff79c6>.</span>filter(
-        Q(name__icontains<span style=color:#ff79c6>=</span>query) <span style=color:#ff79c6>|</span> Q(description__icontains<span style=color:#ff79c6>=</span>query)
-    )
-</code></pre></div><p>This approach however quickly falls apart when using multi-term searches or any
+function might look something like this:</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python><span style=display:flex><span><span style=color:#ff79c6>def</span> <span style=color:#50fa7b>search</span>(query):
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>return</span> Product<span style=color:#ff79c6>.</span>objects<span style=color:#ff79c6>.</span>filter(
+</span></span><span style=display:flex><span>        Q(name__icontains<span style=color:#ff79c6>=</span>query) <span style=color:#ff79c6>|</span> Q(description__icontains<span style=color:#ff79c6>=</span>query)
+</span></span><span style=display:flex><span>    )
+</span></span></code></pre></div><p>This approach however quickly falls apart when using multi-term searches or any
 deviations from the original text. For instance &ldquo;sugar brown&rdquo; will return no
 results. This filter will also not scale well when there are millions of
-records to search through, so we&rsquo;ll need to do better than this.</p>
-<h2 id=approach-2-commutative-__icontains>Approach 2: Commutative <code>__icontains</code></h2>
-<p>This approach is a slight improvement from approach 1, where the order of the
+records to search through, so we&rsquo;ll need to do better than this.</p><h2 id=approach-2-commutative-__icontains>Approach 2: Commutative <code>__icontains</code></h2><p>This approach is a slight improvement from approach 1, where the order of the
 search terms doesn&rsquo;t matter anymore. The basic approach goes something like
-this:</p>
-<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python><span style=color:#ff79c6>def</span> <span style=color:#50fa7b>search</span>(query):
-    <span style=color:#6272a4># build the filter term-by-term</span>
-    q <span style=color:#ff79c6>=</span> Q()
-    <span style=color:#ff79c6>for</span> term <span style=color:#ff79c6>in</span> query<span style=color:#ff79c6>.</span>split():
-        q <span style=color:#ff79c6>&amp;=</span> Q(name__icontains<span style=color:#ff79c6>=</span>term) <span style=color:#ff79c6>|</span> Q(description__icontains<span style=color:#ff79c6>=</span>term)
-
-    <span style=color:#6272a4># perform the query</span>
-    <span style=color:#ff79c6>return</span> Product<span style=color:#ff79c6>.</span>objects<span style=color:#ff79c6>.</span>filter(q)
-</code></pre></div><p>At least this time &ldquo;sugar brown&rdquo; will also match our &ldquo;Brown Sugar&rdquo; product as
+this:</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python><span style=display:flex><span><span style=color:#ff79c6>def</span> <span style=color:#50fa7b>search</span>(query):
+</span></span><span style=display:flex><span>    <span style=color:#6272a4># build the filter term-by-term</span>
+</span></span><span style=display:flex><span>    q <span style=color:#ff79c6>=</span> Q()
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>for</span> term <span style=color:#ff79c6>in</span> query<span style=color:#ff79c6>.</span>split():
+</span></span><span style=display:flex><span>        q <span style=color:#ff79c6>&amp;=</span> Q(name__icontains<span style=color:#ff79c6>=</span>term) <span style=color:#ff79c6>|</span> Q(description__icontains<span style=color:#ff79c6>=</span>term)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#6272a4># perform the query</span>
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>return</span> Product<span style=color:#ff79c6>.</span>objects<span style=color:#ff79c6>.</span>filter(q)
+</span></span></code></pre></div><p>At least this time &ldquo;sugar brown&rdquo; will also match our &ldquo;Brown Sugar&rdquo; product as
 expected, but this still suffers from the inefficiency of approach 1. This
 approach is still too inflexible for general searching - searching for &ldquo;worlds
 best brown sugar&rdquo; will not match the &ldquo;Brown Sugar&rdquo; product since the &ldquo;worlds&rdquo;
 is missing an apostrophe. At this point <code>__icontains</code> will no longer be able to
-help us and we will need to find a better approach.</p>
-<h2 id=approach-3-keyword-index>Approach 3: Keyword index</h2>
-<p>We now introduce a new <code>Keyword</code> model - this model will store interesting
+help us and we will need to find a better approach.</p><h2 id=approach-3-keyword-index>Approach 3: Keyword index</h2><p>We now introduce a new <code>Keyword</code> model - this model will store interesting
 keywords that we will be extracting from our <code>Product</code> models. Then, instead of
 searching our <code>Product</code>s directly we will be searching through our keywords
-instead.</p>
-<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python><span style=color:#ff79c6>from</span> django.db.models <span style=color:#ff79c6>import</span> Index, UniqueConstraint
-
-<span style=color:#ff79c6>class</span> <span style=color:#50fa7b>Keyword</span>(models<span style=color:#ff79c6>.</span>Model):
-    product <span style=color:#ff79c6>=</span> models<span style=color:#ff79c6>.</span>ForeignKey(Product, on_delete<span style=color:#ff79c6>=</span>models<span style=color:#ff79c6>.</span>CASCADE)
-    keyword <span style=color:#ff79c6>=</span> models<span style=color:#ff79c6>.</span>CharField(max_length<span style=color:#ff79c6>=</span><span style=color:#bd93f9>50</span>)
-
-    <span style=color:#ff79c6>class</span> <span style=color:#50fa7b>Meta</span>:
-        indexes <span style=color:#ff79c6>=</span> [Index(fields<span style=color:#ff79c6>=</span>[<span style=color:#f1fa8c>&#39;keyword&#39;</span>])]
-        constraints <span style=color:#ff79c6>=</span> [
-            UniqueConstraint(fields<span style=color:#ff79c6>=</span>[<span style=color:#f1fa8c>&#39;keyword&#39;</span>, <span style=color:#f1fa8c>&#39;product&#39;</span>], name<span style=color:#ff79c6>=</span><span style=color:#f1fa8c>&#39;unique_keyword&#39;</span>),
-        ]
-</code></pre></div><p>Note that we&rsquo;ve added an index to the model on the <code>keyword</code> field, this will
+instead.</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python><span style=display:flex><span><span style=color:#ff79c6>from</span> django.db.models <span style=color:#ff79c6>import</span> Index, UniqueConstraint
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#ff79c6>class</span> <span style=color:#50fa7b>Keyword</span>(models<span style=color:#ff79c6>.</span>Model):
+</span></span><span style=display:flex><span>    product <span style=color:#ff79c6>=</span> models<span style=color:#ff79c6>.</span>ForeignKey(Product, on_delete<span style=color:#ff79c6>=</span>models<span style=color:#ff79c6>.</span>CASCADE)
+</span></span><span style=display:flex><span>    keyword <span style=color:#ff79c6>=</span> models<span style=color:#ff79c6>.</span>CharField(max_length<span style=color:#ff79c6>=</span><span style=color:#bd93f9>50</span>)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>class</span> <span style=color:#50fa7b>Meta</span>:
+</span></span><span style=display:flex><span>        indexes <span style=color:#ff79c6>=</span> [Index(fields<span style=color:#ff79c6>=</span>[<span style=color:#f1fa8c>&#39;keyword&#39;</span>])]
+</span></span><span style=display:flex><span>        constraints <span style=color:#ff79c6>=</span> [
+</span></span><span style=display:flex><span>            UniqueConstraint(fields<span style=color:#ff79c6>=</span>[<span style=color:#f1fa8c>&#39;keyword&#39;</span>, <span style=color:#f1fa8c>&#39;product&#39;</span>], name<span style=color:#ff79c6>=</span><span style=color:#f1fa8c>&#39;unique_keyword&#39;</span>),
+</span></span><span style=display:flex><span>        ]
+</span></span></code></pre></div><p>Note that we&rsquo;ve added an index to the model on the <code>keyword</code> field, this will
 help by making the search more efficient (you can read up more on Django
 <code>Index</code>es in the
-<a href=https://docs.djangoproject.com/en/dev/ref/models/indexes/>docs</a>).</p>
-<p>To generate these keywords we will also be introducing two new functions: one
+<a href=https://docs.djangoproject.com/en/dev/ref/models/indexes/>docs</a>).</p><p>To generate these keywords we will also be introducing two new functions: one
 is to generate keywords from a piece of text and the other is to save these
-keywords for a given product.</p>
-<p>To generate our keywords we&rsquo;ll split the text into a list of tokens and
+keywords for a given product.</p><p>To generate our keywords we&rsquo;ll split the text into a list of tokens and
 pre-process these tokens a little bit by removing all non-alphanumeric
-characters and making all the tokens lowercase:</p>
-<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python><span style=color:#6272a4># given a string generates a set of keywords for searching.</span>
-<span style=color:#ff79c6>def</span> <span style=color:#50fa7b>generate_keywords</span>(text):
-    <span style=color:#6272a4># split the text into a list of lowercase tokens</span>
-    tokens <span style=color:#ff79c6>=</span> [s<span style=color:#ff79c6>.</span>lower() <span style=color:#ff79c6>for</span> s <span style=color:#ff79c6>in</span> text<span style=color:#ff79c6>.</span>split()]
-
-    <span style=color:#6272a4># remove non alpha-numeric characters from tokens</span>
-    tokens <span style=color:#ff79c6>=</span> [<span style=color:#f1fa8c>&#39;&#39;</span><span style=color:#ff79c6>.</span>join(c <span style=color:#ff79c6>for</span> c <span style=color:#ff79c6>in</span> token <span style=color:#ff79c6>if</span> c<span style=color:#ff79c6>.</span>isalpha()) <span style=color:#ff79c6>for</span> token <span style=color:#ff79c6>in</span> tokens]
-
-    <span style=color:#6272a4># remove empty and duplicate tokens and limit length of all tokens to 50</span>
-    <span style=color:#6272a4># (max keyword length for Keyword model)</span>
-    tokens <span style=color:#ff79c6>=</span> <span style=color:#8be9fd;font-style:italic>set</span>(t[:<span style=color:#bd93f9>50</span>] <span style=color:#ff79c6>for</span> t <span style=color:#ff79c6>in</span> tokens <span style=color:#ff79c6>if</span> t)
-
-    <span style=color:#ff79c6>return</span> tokens
-</code></pre></div><p>We then extend our original <code>Product</code> model with a new function to generate
-keywords whenever we save the <code>Product</code>:</p>
-<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python><span style=color:#ff79c6>class</span> <span style=color:#50fa7b>Product</span>(models<span style=color:#ff79c6>.</span>Model):
-    <span style=color:#ff79c6>...</span>
-
-    <span style=color:#ff79c6>def</span> <span style=color:#50fa7b>generate_index</span>(self):
-        <span style=color:#6272a4># generate product keywords</span>
-        name_keywords <span style=color:#ff79c6>=</span> generate_keywords(self<span style=color:#ff79c6>.</span>name)
-        description_keywords <span style=color:#ff79c6>=</span> generate_keywords(self<span style=color:#ff79c6>.</span>description)
-
-        keywords <span style=color:#ff79c6>=</span> name_keywords<span style=color:#ff79c6>.</span>union(description_keywords)
-
-        <span style=color:#6272a4># remove all outdated keywords</span>
-        self<span style=color:#ff79c6>.</span>keyword_set<span style=color:#ff79c6>.</span>exclude(keyword__in<span style=color:#ff79c6>=</span>keywords)<span style=color:#ff79c6>.</span>delete()
-
-        <span style=color:#6272a4># create the new keywords</span>
-        current <span style=color:#ff79c6>=</span> <span style=color:#8be9fd;font-style:italic>set</span>(self<span style=color:#ff79c6>.</span>keyword_set<span style=color:#ff79c6>.</span>values_list(<span style=color:#f1fa8c>&#39;keyword&#39;</span>, flat<span style=color:#ff79c6>=</span><span style=color:#ff79c6>True</span>))
-        create <span style=color:#ff79c6>=</span> keywords <span style=color:#ff79c6>-</span> current
-
-        Keyword<span style=color:#ff79c6>.</span>objects<span style=color:#ff79c6>.</span>bulk_create([
-            Keyword(keyword<span style=color:#ff79c6>=</span>keyword, product<span style=color:#ff79c6>=</span>self) <span style=color:#ff79c6>for</span> keyword <span style=color:#ff79c6>in</span> create
-        ])
-
-    <span style=color:#ff79c6>def</span> <span style=color:#50fa7b>save</span>(self, <span style=color:#ff79c6>*</span>args, <span style=color:#ff79c6>**</span>kwargs):
-        <span style=color:#6272a4># do the usual saving</span>
-        <span style=color:#8be9fd;font-style:italic>super</span>()<span style=color:#ff79c6>.</span>save(<span style=color:#ff79c6>*</span>args, <span style=color:#ff79c6>**</span>kwargs)
-
-        <span style=color:#6272a4># generate new keywords</span>
-        self<span style=color:#ff79c6>.</span>generate_index()
-</code></pre></div><p>Finally, we update our search function to now search through the <code>Keyword</code>s
-instead of the <code>Product</code>s directly:</p>
-<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python><span style=color:#ff79c6>def</span> <span style=color:#50fa7b>search</span>(query):
-    <span style=color:#6272a4># generate keywords to search for</span>
-    keywords <span style=color:#ff79c6>=</span> generate_keywords(query)
-
-    products <span style=color:#ff79c6>=</span> Product<span style=color:#ff79c6>.</span>objects<span style=color:#ff79c6>.</span>filter(
-        <span style=color:#6272a4># find all products with matching keywords</span>
-        keyword_set__keyword__in<span style=color:#ff79c6>=</span>keywords,
-    )<span style=color:#ff79c6>.</span>annotate(
-        <span style=color:#6272a4># count how many keyword matches each product has</span>
-        keyword_matches<span style=color:#ff79c6>=</span>Count(<span style=color:#f1fa8c>&#39;keyword_set&#39;</span>),
-    )<span style=color:#ff79c6>.</span>filter(
-        <span style=color:#6272a4># filter for products that match all of the keywords</span>
-        keyword_matches__gte<span style=color:#ff79c6>=</span><span style=color:#8be9fd;font-style:italic>len</span>(keywords),
-    )
-
-    <span style=color:#ff79c6>return</span> products
-</code></pre></div><p>Note that the <code>search</code> function uses the same <code>generate_keywords</code> function to
+characters and making all the tokens lowercase:</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python><span style=display:flex><span><span style=color:#6272a4># given a string generates a set of keywords for searching.</span>
+</span></span><span style=display:flex><span><span style=color:#ff79c6>def</span> <span style=color:#50fa7b>generate_keywords</span>(text):
+</span></span><span style=display:flex><span>    <span style=color:#6272a4># split the text into a list of lowercase tokens</span>
+</span></span><span style=display:flex><span>    tokens <span style=color:#ff79c6>=</span> [s<span style=color:#ff79c6>.</span>lower() <span style=color:#ff79c6>for</span> s <span style=color:#ff79c6>in</span> text<span style=color:#ff79c6>.</span>split()]
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#6272a4># remove non alpha-numeric characters from tokens</span>
+</span></span><span style=display:flex><span>    tokens <span style=color:#ff79c6>=</span> [<span style=color:#f1fa8c>&#39;&#39;</span><span style=color:#ff79c6>.</span>join(c <span style=color:#ff79c6>for</span> c <span style=color:#ff79c6>in</span> token <span style=color:#ff79c6>if</span> c<span style=color:#ff79c6>.</span>isalpha()) <span style=color:#ff79c6>for</span> token <span style=color:#ff79c6>in</span> tokens]
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#6272a4># remove empty and duplicate tokens and limit length of all tokens to 50</span>
+</span></span><span style=display:flex><span>    <span style=color:#6272a4># (max keyword length for Keyword model)</span>
+</span></span><span style=display:flex><span>    tokens <span style=color:#ff79c6>=</span> <span style=color:#8be9fd;font-style:italic>set</span>(t[:<span style=color:#bd93f9>50</span>] <span style=color:#ff79c6>for</span> t <span style=color:#ff79c6>in</span> tokens <span style=color:#ff79c6>if</span> t)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>return</span> tokens
+</span></span></code></pre></div><p>We then extend our original <code>Product</code> model with a new function to generate
+keywords whenever we save the <code>Product</code>:</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python><span style=display:flex><span><span style=color:#ff79c6>class</span> <span style=color:#50fa7b>Product</span>(models<span style=color:#ff79c6>.</span>Model):
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>...</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>def</span> <span style=color:#50fa7b>generate_index</span>(self):
+</span></span><span style=display:flex><span>        <span style=color:#6272a4># generate product keywords</span>
+</span></span><span style=display:flex><span>        name_keywords <span style=color:#ff79c6>=</span> generate_keywords(self<span style=color:#ff79c6>.</span>name)
+</span></span><span style=display:flex><span>        description_keywords <span style=color:#ff79c6>=</span> generate_keywords(self<span style=color:#ff79c6>.</span>description)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>        keywords <span style=color:#ff79c6>=</span> name_keywords<span style=color:#ff79c6>.</span>union(description_keywords)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>        <span style=color:#6272a4># remove all outdated keywords</span>
+</span></span><span style=display:flex><span>        self<span style=color:#ff79c6>.</span>keyword_set<span style=color:#ff79c6>.</span>exclude(keyword__in<span style=color:#ff79c6>=</span>keywords)<span style=color:#ff79c6>.</span>delete()
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>        <span style=color:#6272a4># create the new keywords</span>
+</span></span><span style=display:flex><span>        current <span style=color:#ff79c6>=</span> <span style=color:#8be9fd;font-style:italic>set</span>(self<span style=color:#ff79c6>.</span>keyword_set<span style=color:#ff79c6>.</span>values_list(<span style=color:#f1fa8c>&#39;keyword&#39;</span>, flat<span style=color:#ff79c6>=</span><span style=color:#ff79c6>True</span>))
+</span></span><span style=display:flex><span>        create <span style=color:#ff79c6>=</span> keywords <span style=color:#ff79c6>-</span> current
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>        Keyword<span style=color:#ff79c6>.</span>objects<span style=color:#ff79c6>.</span>bulk_create([
+</span></span><span style=display:flex><span>            Keyword(keyword<span style=color:#ff79c6>=</span>keyword, product<span style=color:#ff79c6>=</span>self) <span style=color:#ff79c6>for</span> keyword <span style=color:#ff79c6>in</span> create
+</span></span><span style=display:flex><span>        ])
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>def</span> <span style=color:#50fa7b>save</span>(self, <span style=color:#ff79c6>*</span>args, <span style=color:#ff79c6>**</span>kwargs):
+</span></span><span style=display:flex><span>        <span style=color:#6272a4># do the usual saving</span>
+</span></span><span style=display:flex><span>        <span style=color:#8be9fd;font-style:italic>super</span>()<span style=color:#ff79c6>.</span>save(<span style=color:#ff79c6>*</span>args, <span style=color:#ff79c6>**</span>kwargs)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>        <span style=color:#6272a4># generate new keywords</span>
+</span></span><span style=display:flex><span>        self<span style=color:#ff79c6>.</span>generate_index()
+</span></span></code></pre></div><p>Finally, we update our search function to now search through the <code>Keyword</code>s
+instead of the <code>Product</code>s directly:</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python><span style=display:flex><span><span style=color:#ff79c6>def</span> <span style=color:#50fa7b>search</span>(query):
+</span></span><span style=display:flex><span>    <span style=color:#6272a4># generate keywords to search for</span>
+</span></span><span style=display:flex><span>    keywords <span style=color:#ff79c6>=</span> generate_keywords(query)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    products <span style=color:#ff79c6>=</span> Product<span style=color:#ff79c6>.</span>objects<span style=color:#ff79c6>.</span>filter(
+</span></span><span style=display:flex><span>        <span style=color:#6272a4># find all products with matching keywords</span>
+</span></span><span style=display:flex><span>        keyword_set__keyword__in<span style=color:#ff79c6>=</span>keywords,
+</span></span><span style=display:flex><span>    )<span style=color:#ff79c6>.</span>annotate(
+</span></span><span style=display:flex><span>        <span style=color:#6272a4># count how many keyword matches each product has</span>
+</span></span><span style=display:flex><span>        keyword_matches<span style=color:#ff79c6>=</span>Count(<span style=color:#f1fa8c>&#39;keyword_set&#39;</span>),
+</span></span><span style=display:flex><span>    )<span style=color:#ff79c6>.</span>filter(
+</span></span><span style=display:flex><span>        <span style=color:#6272a4># filter for products that match all of the keywords</span>
+</span></span><span style=display:flex><span>        keyword_matches__gte<span style=color:#ff79c6>=</span><span style=color:#8be9fd;font-style:italic>len</span>(keywords),
+</span></span><span style=display:flex><span>    )
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>return</span> products
+</span></span></code></pre></div><p>Note that the <code>search</code> function uses the same <code>generate_keywords</code> function to
 transform the search query into a list of keywords to search for. To filter the
 products, we annotate (documentation for annotations in Django
 <a href=https://docs.djangoproject.com/en/dev/topics/db/aggregation/>here</a>) each
 product with a <code>Count</code> of how many keyword matches it had. If the amount of
 matches is greater than or equal to the amount of search keywords it means
-we&rsquo;ve got a hit (all the keywords matched).</p>
-<p>This method solved two things: firstly, it is a lot more efficient than the
+we&rsquo;ve got a hit (all the keywords matched).</p><p>This method solved two things: firstly, it is a lot more efficient than the
 <code>__icontains</code> method since all the keywords are indexed and pre-processed
 beforehand. By using annotations we&rsquo;re also making sure that all the
 heavy-lifting is done by the database (as it should be). Second and most
 importantly; we&rsquo;ve now made the whole search process a lot more flexible. The
 search is now already insensitive to non-alphanumeric characters (i.e.
 searching for &ldquo;world&rsquo;s&rdquo; or &ldquo;worlds&rdquo; will return the same results) but we can go
-even further.</p>
-<h2 id=approach-4-keyword-stemming>Approach 4: Keyword stemming</h2>
-<p>The previous approach is already working well, but now we&rsquo;ve run into a
+even further.</p><h2 id=approach-4-keyword-stemming>Approach 4: Keyword stemming</h2><p>The previous approach is already working well, but now we&rsquo;ve run into a
 problem. A hungry customer searched for &ldquo;cupcakes&rdquo; but found no results because
 we only have a &ldquo;cupcake&rdquo; for sale. This is where stemming comes in. Stemming is
 the process whereby inflections are removed from words, i.e. &ldquo;running&rdquo; ->
-&ldquo;run&rdquo;, &ldquo;runs&rdquo; -> &ldquo;run&rdquo; and so forth.</p>
-<p>If we made use of keyword stemming the &ldquo;cupcakes&rdquo; search would have matched our
+&ldquo;run&rdquo;, &ldquo;runs&rdquo; -> &ldquo;run&rdquo; and so forth.</p><p>If we made use of keyword stemming the &ldquo;cupcakes&rdquo; search would have matched our
 &ldquo;cupcake&rdquo; product. Heck, even &ldquo;cupcaking&rdquo; would work. To do stemming we&rsquo;ll make
 use of the <code>nltk</code> library, a Python library for doing natural-language
-processing.</p>
-<p>To perform stemming on a word, you can use <code>nltk</code> in the following manner:</p>
-<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python><span style=color:#ff79c6>from</span> nltk.stem <span style=color:#ff79c6>import</span> PorterStemmer
-
-stemmer <span style=color:#ff79c6>=</span> PorterStemmer()
-
-<span style=color:#6272a4># all of these will print &#34;cupcak&#34;</span>
-<span style=color:#8be9fd;font-style:italic>print</span>(stemmer<span style=color:#ff79c6>.</span>stem(<span style=color:#f1fa8c>&#34;cupcake&#34;</span>))
-<span style=color:#8be9fd;font-style:italic>print</span>(stemmer<span style=color:#ff79c6>.</span>stem(<span style=color:#f1fa8c>&#34;cupcakes&#34;</span>))
-<span style=color:#8be9fd;font-style:italic>print</span>(stemmer<span style=color:#ff79c6>.</span>stem(<span style=color:#f1fa8c>&#34;cupcaking&#34;</span>))
-</code></pre></div><p>We&rsquo;ll be using the <code>PorterStemmer</code> for this post due to its simplicity and
+processing.</p><p>To perform stemming on a word, you can use <code>nltk</code> in the following manner:</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python><span style=display:flex><span><span style=color:#ff79c6>from</span> nltk.stem <span style=color:#ff79c6>import</span> PorterStemmer
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>stemmer <span style=color:#ff79c6>=</span> PorterStemmer()
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#6272a4># all of these will print &#34;cupcak&#34;</span>
+</span></span><span style=display:flex><span><span style=color:#8be9fd;font-style:italic>print</span>(stemmer<span style=color:#ff79c6>.</span>stem(<span style=color:#f1fa8c>&#34;cupcake&#34;</span>))
+</span></span><span style=display:flex><span><span style=color:#8be9fd;font-style:italic>print</span>(stemmer<span style=color:#ff79c6>.</span>stem(<span style=color:#f1fa8c>&#34;cupcakes&#34;</span>))
+</span></span><span style=display:flex><span><span style=color:#8be9fd;font-style:italic>print</span>(stemmer<span style=color:#ff79c6>.</span>stem(<span style=color:#f1fa8c>&#34;cupcaking&#34;</span>))
+</span></span></code></pre></div><p>We&rsquo;ll be using the <code>PorterStemmer</code> for this post due to its simplicity and
 speed, but <code>nltk</code> supports quite a few stemming algorithms. We now update our
 <code>generate_keywords</code> function to perform stemming on all tokens that it thinks
-is words (you might need to adjust this logic depending on your application):</p>
-<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python><span style=color:#6272a4># set up the stemmer</span>
-stemmer <span style=color:#ff79c6>=</span> PorterStemmer()
-
-<span style=color:#ff79c6>def</span> <span style=color:#50fa7b>generate_keywords</span>(text):
-    <span style=color:#6272a4># split the text into a list of lowercase tokens</span>
-    tokens <span style=color:#ff79c6>=</span> [s<span style=color:#ff79c6>.</span>lower() <span style=color:#ff79c6>for</span> s <span style=color:#ff79c6>in</span> text<span style=color:#ff79c6>.</span>split()]
-
-    <span style=color:#6272a4># remove non alpha-numeric characters from tokens</span>
-    tokens <span style=color:#ff79c6>=</span> [<span style=color:#f1fa8c>&#39;&#39;</span><span style=color:#ff79c6>.</span>join(c <span style=color:#ff79c6>for</span> c <span style=color:#ff79c6>in</span> token <span style=color:#ff79c6>if</span> c<span style=color:#ff79c6>.</span>isalpha()) <span style=color:#ff79c6>for</span> token <span style=color:#ff79c6>in</span> tokens]
-
-    <span style=color:#6272a4># split the tokens into words and &#34;other&#34; - a token is considered a word if</span>
-    <span style=color:#6272a4># it doesn&#39;t contain any digits</span>
-    words <span style=color:#ff79c6>=</span> []
-    other <span style=color:#ff79c6>=</span> []
-    <span style=color:#ff79c6>for</span> token <span style=color:#ff79c6>in</span> tokens:
-        (other <span style=color:#ff79c6>if</span> <span style=color:#8be9fd;font-style:italic>any</span>(s<span style=color:#ff79c6>.</span>isdigit() <span style=color:#ff79c6>for</span> s <span style=color:#ff79c6>in</span> token) <span style=color:#ff79c6>else</span> words)<span style=color:#ff79c6>.</span>append(token)
-
-    <span style=color:#6272a4># apply stemming to words</span>
-    words <span style=color:#ff79c6>=</span> [stemmer<span style=color:#ff79c6>.</span>stem(w) <span style=color:#ff79c6>for</span> w <span style=color:#ff79c6>in</span> words]
-
-    <span style=color:#6272a4># remove empty and duplicate tokens and limit length of all tokens to 50</span>
-    <span style=color:#6272a4># (max keyword length for Keyword model)</span>
-    tokens <span style=color:#ff79c6>=</span> <span style=color:#8be9fd;font-style:italic>set</span>(t[:<span style=color:#bd93f9>50</span>] <span style=color:#ff79c6>for</span> t <span style=color:#ff79c6>in</span> words <span style=color:#ff79c6>+</span> other <span style=color:#ff79c6>if</span> t)
-
-    <span style=color:#ff79c6>return</span> tokens
-</code></pre></div><div class="alert alert-info">
-<i data-feather=flag></i>
+is words (you might need to adjust this logic depending on your application):</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python><span style=display:flex><span><span style=color:#6272a4># set up the stemmer</span>
+</span></span><span style=display:flex><span>stemmer <span style=color:#ff79c6>=</span> PorterStemmer()
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#ff79c6>def</span> <span style=color:#50fa7b>generate_keywords</span>(text):
+</span></span><span style=display:flex><span>    <span style=color:#6272a4># split the text into a list of lowercase tokens</span>
+</span></span><span style=display:flex><span>    tokens <span style=color:#ff79c6>=</span> [s<span style=color:#ff79c6>.</span>lower() <span style=color:#ff79c6>for</span> s <span style=color:#ff79c6>in</span> text<span style=color:#ff79c6>.</span>split()]
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#6272a4># remove non alpha-numeric characters from tokens</span>
+</span></span><span style=display:flex><span>    tokens <span style=color:#ff79c6>=</span> [<span style=color:#f1fa8c>&#39;&#39;</span><span style=color:#ff79c6>.</span>join(c <span style=color:#ff79c6>for</span> c <span style=color:#ff79c6>in</span> token <span style=color:#ff79c6>if</span> c<span style=color:#ff79c6>.</span>isalpha()) <span style=color:#ff79c6>for</span> token <span style=color:#ff79c6>in</span> tokens]
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#6272a4># split the tokens into words and &#34;other&#34; - a token is considered a word if</span>
+</span></span><span style=display:flex><span>    <span style=color:#6272a4># it doesn&#39;t contain any digits</span>
+</span></span><span style=display:flex><span>    words <span style=color:#ff79c6>=</span> []
+</span></span><span style=display:flex><span>    other <span style=color:#ff79c6>=</span> []
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>for</span> token <span style=color:#ff79c6>in</span> tokens:
+</span></span><span style=display:flex><span>        (other <span style=color:#ff79c6>if</span> <span style=color:#8be9fd;font-style:italic>any</span>(s<span style=color:#ff79c6>.</span>isdigit() <span style=color:#ff79c6>for</span> s <span style=color:#ff79c6>in</span> token) <span style=color:#ff79c6>else</span> words)<span style=color:#ff79c6>.</span>append(token)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#6272a4># apply stemming to words</span>
+</span></span><span style=display:flex><span>    words <span style=color:#ff79c6>=</span> [stemmer<span style=color:#ff79c6>.</span>stem(w) <span style=color:#ff79c6>for</span> w <span style=color:#ff79c6>in</span> words]
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#6272a4># remove empty and duplicate tokens and limit length of all tokens to 50</span>
+</span></span><span style=display:flex><span>    <span style=color:#6272a4># (max keyword length for Keyword model)</span>
+</span></span><span style=display:flex><span>    tokens <span style=color:#ff79c6>=</span> <span style=color:#8be9fd;font-style:italic>set</span>(t[:<span style=color:#bd93f9>50</span>] <span style=color:#ff79c6>for</span> t <span style=color:#ff79c6>in</span> words <span style=color:#ff79c6>+</span> other <span style=color:#ff79c6>if</span> t)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>return</span> tokens
+</span></span></code></pre></div><div class="alert alert-info"><i data-feather=flag></i>
 Stemming is language specific - if you want to apply stemming to non-English
-keywords you will probably need to use another stemming algorithm.
-</div>
-<p>The searching process is now much more flexible than when we started out and
+keywords you will probably need to use another stemming algorithm.</div><p>The searching process is now much more flexible than when we started out and
 even those people that search for &ldquo;cupcaking&rdquo; will now be satisfied. We only
 have one problem left to solve. If a customer searches for &ldquo;sugar&rdquo;, they will
-be shown the following results:</p>
-<table class="table table-sm table-striped table-bordered">
-<thead>
-<tr>
-<th>ID</th>
-<th>Name</th>
-<th>Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>1</td>
-<td>Flour</td>
-<td>Add sugar and you&rsquo;ve got a cake</td>
-</tr>
-<tr>
-<td>2</td>
-<td>Brown Sugar</td>
-<td>World&rsquo;s best brown sugar</td>
-</tr>
-<tr>
-<td>3</td>
-<td>Icing Sugar</td>
-<td>Also known as frosting or powdered sugar</td>
-</tr>
-<tr>
-<td>4</td>
-<td>Glucose Liquid</td>
-<td>Clear sugar syrup</td>
-</tr>
-</tbody>
-</table>
-<p>Flour? They don&rsquo;t care about that - yet it is the very first result even though
+be shown the following results:</p><table class="table table-sm table-striped table-bordered"><thead><tr><th>ID</th><th>Name</th><th>Description</th></tr></thead><tbody><tr><td>1</td><td>Flour</td><td>Add sugar and you&rsquo;ve got a cake</td></tr><tr><td>2</td><td>Brown Sugar</td><td>World&rsquo;s best brown sugar</td></tr><tr><td>3</td><td>Icing Sugar</td><td>Also known as frosting or powdered sugar</td></tr><tr><td>4</td><td>Glucose Liquid</td><td>Clear sugar syrup</td></tr></tbody></table><p>Flour? They don&rsquo;t care about that - yet it is the very first result even though
 it only had the &ldquo;sugar&rdquo; term in its description. The final problem to solve is
-making sure that the customer sees relevant results first.</p>
-<h2 id=approach-5-scoring-search-results>Approach 5: Scoring search results</h2>
-<p>To order our search results we will need to assign some score to each result so
+making sure that the customer sees relevant results first.</p><h2 id=approach-5-scoring-search-results>Approach 5: Scoring search results</h2><p>To order our search results we will need to assign some score to each result so
 that more relevant results are shown first. To do that we extend our original
 <code>Keyword</code> class and add an <code>importance</code> field - the more important a keyword is
-the higher its <code>importance</code> value will be:</p>
-<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python><span style=color:#ff79c6>class</span> <span style=color:#50fa7b>Keyword</span>(models<span style=color:#ff79c6>.</span>Model):
-    <span style=color:#ff79c6>...</span>
-    importance <span style=color:#ff79c6>=</span> models<span style=color:#ff79c6>.</span>FloatField()
-</code></pre></div><p>We then also update our <code>generate_index</code> function in our <code>Product</code> model to
-assign the importance to keywords:</p>
-<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python><span style=color:#ff79c6>class</span> <span style=color:#50fa7b>Product</span>(models<span style=color:#ff79c6>.</span>Model):
-    <span style=color:#ff79c6>...</span>
-
-    <span style=color:#ff79c6>def</span> <span style=color:#50fa7b>generate_index</span>(self):
-        <span style=color:#6272a4># generate product keywords</span>
-        name_keywords <span style=color:#ff79c6>=</span> generate_keywords(self<span style=color:#ff79c6>.</span>name)
-        description_keywords <span style=color:#ff79c6>=</span> generate_keywords(self<span style=color:#ff79c6>.</span>description)
-
-        <span style=color:#6272a4># remove duplicate keywords</span>
-        description_keywords <span style=color:#ff79c6>-=</span> name_keywords
-
-        <span style=color:#6272a4># assign importance to keywords</span>
-        pairs <span style=color:#ff79c6>=</span> [
-            (<span style=color:#bd93f9>1.1</span>, name_keywords),
-            (<span style=color:#bd93f9>0.5</span>, description_keywords),
-        ]
-
-        <span style=color:#6272a4># remove all outdated keywords (we now need to take keyword whose</span>
-        <span style=color:#6272a4># importance has changed into account)</span>
-        q <span style=color:#ff79c6>=</span> Q()
-        <span style=color:#ff79c6>for</span> importance, keywords <span style=color:#ff79c6>in</span> pairs:
-            <span style=color:#ff79c6>for</span> keyword <span style=color:#ff79c6>in</span> keywords:
-                q <span style=color:#ff79c6>|=</span> Q(
-                    keyword<span style=color:#ff79c6>=</span>keyword,
-                    importance__range<span style=color:#ff79c6>=</span>(importance <span style=color:#ff79c6>-</span> <span style=color:#bd93f9>0.05</span>, importance <span style=color:#ff79c6>+</span> <span style=color:#bd93f9>0.05</span>),
-                )
-
-        self<span style=color:#ff79c6>.</span>keyword_set<span style=color:#ff79c6>.</span>exclude(q)<span style=color:#ff79c6>.</span>delete()
-
-        <span style=color:#6272a4># create the new keywords</span>
-        current <span style=color:#ff79c6>=</span> <span style=color:#8be9fd;font-style:italic>set</span>(self<span style=color:#ff79c6>.</span>keyword_set<span style=color:#ff79c6>.</span>values_list(<span style=color:#f1fa8c>&#39;keyword&#39;</span>, flat<span style=color:#ff79c6>=</span><span style=color:#ff79c6>True</span>))
-        create <span style=color:#ff79c6>=</span> name_keywords<span style=color:#ff79c6>.</span>union(description_keywords) <span style=color:#ff79c6>-</span> current
-
-        models <span style=color:#ff79c6>=</span> []
-        <span style=color:#ff79c6>for</span> importance, keywords <span style=color:#ff79c6>in</span> pairs:
-            models <span style=color:#ff79c6>+=</span> [Keyword(
-                product<span style=color:#ff79c6>=</span>self,
-                keyword<span style=color:#ff79c6>=</span>keyword,
-                importance<span style=color:#ff79c6>=</span>importance,
-            ) <span style=color:#ff79c6>for</span> keyword <span style=color:#ff79c6>in</span> keywords<span style=color:#ff79c6>.</span>intersection(create)]
-
-        Keyword<span style=color:#ff79c6>.</span>objects<span style=color:#ff79c6>.</span>bulk_create(models)
-</code></pre></div><p>The importance values I chose here were rather arbitrary, but it roughly
+the higher its <code>importance</code> value will be:</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python><span style=display:flex><span><span style=color:#ff79c6>class</span> <span style=color:#50fa7b>Keyword</span>(models<span style=color:#ff79c6>.</span>Model):
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>...</span>
+</span></span><span style=display:flex><span>    importance <span style=color:#ff79c6>=</span> models<span style=color:#ff79c6>.</span>FloatField()
+</span></span></code></pre></div><p>We then also update our <code>generate_index</code> function in our <code>Product</code> model to
+assign the importance to keywords:</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python><span style=display:flex><span><span style=color:#ff79c6>class</span> <span style=color:#50fa7b>Product</span>(models<span style=color:#ff79c6>.</span>Model):
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>...</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>def</span> <span style=color:#50fa7b>generate_index</span>(self):
+</span></span><span style=display:flex><span>        <span style=color:#6272a4># generate product keywords</span>
+</span></span><span style=display:flex><span>        name_keywords <span style=color:#ff79c6>=</span> generate_keywords(self<span style=color:#ff79c6>.</span>name)
+</span></span><span style=display:flex><span>        description_keywords <span style=color:#ff79c6>=</span> generate_keywords(self<span style=color:#ff79c6>.</span>description)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>        <span style=color:#6272a4># remove duplicate keywords</span>
+</span></span><span style=display:flex><span>        description_keywords <span style=color:#ff79c6>-=</span> name_keywords
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>        <span style=color:#6272a4># assign importance to keywords</span>
+</span></span><span style=display:flex><span>        pairs <span style=color:#ff79c6>=</span> [
+</span></span><span style=display:flex><span>            (<span style=color:#bd93f9>1.1</span>, name_keywords),
+</span></span><span style=display:flex><span>            (<span style=color:#bd93f9>0.5</span>, description_keywords),
+</span></span><span style=display:flex><span>        ]
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>        <span style=color:#6272a4># remove all outdated keywords (we now need to take keyword whose</span>
+</span></span><span style=display:flex><span>        <span style=color:#6272a4># importance has changed into account)</span>
+</span></span><span style=display:flex><span>        q <span style=color:#ff79c6>=</span> Q()
+</span></span><span style=display:flex><span>        <span style=color:#ff79c6>for</span> importance, keywords <span style=color:#ff79c6>in</span> pairs:
+</span></span><span style=display:flex><span>            <span style=color:#ff79c6>for</span> keyword <span style=color:#ff79c6>in</span> keywords:
+</span></span><span style=display:flex><span>                q <span style=color:#ff79c6>|=</span> Q(
+</span></span><span style=display:flex><span>                    keyword<span style=color:#ff79c6>=</span>keyword,
+</span></span><span style=display:flex><span>                    importance__range<span style=color:#ff79c6>=</span>(importance <span style=color:#ff79c6>-</span> <span style=color:#bd93f9>0.05</span>, importance <span style=color:#ff79c6>+</span> <span style=color:#bd93f9>0.05</span>),
+</span></span><span style=display:flex><span>                )
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>        self<span style=color:#ff79c6>.</span>keyword_set<span style=color:#ff79c6>.</span>exclude(q)<span style=color:#ff79c6>.</span>delete()
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>        <span style=color:#6272a4># create the new keywords</span>
+</span></span><span style=display:flex><span>        current <span style=color:#ff79c6>=</span> <span style=color:#8be9fd;font-style:italic>set</span>(self<span style=color:#ff79c6>.</span>keyword_set<span style=color:#ff79c6>.</span>values_list(<span style=color:#f1fa8c>&#39;keyword&#39;</span>, flat<span style=color:#ff79c6>=</span><span style=color:#ff79c6>True</span>))
+</span></span><span style=display:flex><span>        create <span style=color:#ff79c6>=</span> name_keywords<span style=color:#ff79c6>.</span>union(description_keywords) <span style=color:#ff79c6>-</span> current
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>        models <span style=color:#ff79c6>=</span> []
+</span></span><span style=display:flex><span>        <span style=color:#ff79c6>for</span> importance, keywords <span style=color:#ff79c6>in</span> pairs:
+</span></span><span style=display:flex><span>            models <span style=color:#ff79c6>+=</span> [Keyword(
+</span></span><span style=display:flex><span>                product<span style=color:#ff79c6>=</span>self,
+</span></span><span style=display:flex><span>                keyword<span style=color:#ff79c6>=</span>keyword,
+</span></span><span style=display:flex><span>                importance<span style=color:#ff79c6>=</span>importance,
+</span></span><span style=display:flex><span>            ) <span style=color:#ff79c6>for</span> keyword <span style=color:#ff79c6>in</span> keywords<span style=color:#ff79c6>.</span>intersection(create)]
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>        Keyword<span style=color:#ff79c6>.</span>objects<span style=color:#ff79c6>.</span>bulk_create(models)
+</span></span></code></pre></div><p>The importance values I chose here were rather arbitrary, but it roughly
 correlates to one keyword match in the product name being more important than
-two keyword matches in the description.</p>
-<p>Finally we update our search function as well:</p>
-<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python><span style=color:#ff79c6>from</span> django.db.models <span style=color:#ff79c6>import</span> Sum
-
-<span style=color:#ff79c6>def</span> <span style=color:#50fa7b>search</span>(query):
-    <span style=color:#6272a4># generate keywords to search for</span>
-    keywords <span style=color:#ff79c6>=</span> generate_keywords(query)
-
-    products <span style=color:#ff79c6>=</span> Product<span style=color:#ff79c6>.</span>objects<span style=color:#ff79c6>.</span>filter(
-        <span style=color:#6272a4># find all products with matching keywords</span>
-        keyword_set__keyword__in<span style=color:#ff79c6>=</span>keywords,
-    )<span style=color:#ff79c6>.</span>annotate(
-        <span style=color:#6272a4># calculate how well the product matches the search</span>
-        search_score<span style=color:#ff79c6>=</span>Sum(<span style=color:#f1fa8c>&#39;keyword_set__importance&#39;</span>),
-    )<span style=color:#ff79c6>.</span>order_by(
-        <span style=color:#6272a4># order the products according to how well they match the search</span>
-        <span style=color:#f1fa8c>&#39;-search_score&#39;</span>,
-    )
-
-    <span style=color:#ff79c6>return</span> products
-</code></pre></div><p>We then calculate how well the product matches the search by summing the
+two keyword matches in the description.</p><p>Finally we update our search function as well:</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python><span style=display:flex><span><span style=color:#ff79c6>from</span> django.db.models <span style=color:#ff79c6>import</span> Sum
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#ff79c6>def</span> <span style=color:#50fa7b>search</span>(query):
+</span></span><span style=display:flex><span>    <span style=color:#6272a4># generate keywords to search for</span>
+</span></span><span style=display:flex><span>    keywords <span style=color:#ff79c6>=</span> generate_keywords(query)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    products <span style=color:#ff79c6>=</span> Product<span style=color:#ff79c6>.</span>objects<span style=color:#ff79c6>.</span>filter(
+</span></span><span style=display:flex><span>        <span style=color:#6272a4># find all products with matching keywords</span>
+</span></span><span style=display:flex><span>        keyword_set__keyword__in<span style=color:#ff79c6>=</span>keywords,
+</span></span><span style=display:flex><span>    )<span style=color:#ff79c6>.</span>annotate(
+</span></span><span style=display:flex><span>        <span style=color:#6272a4># calculate how well the product matches the search</span>
+</span></span><span style=display:flex><span>        search_score<span style=color:#ff79c6>=</span>Sum(<span style=color:#f1fa8c>&#39;keyword_set__importance&#39;</span>),
+</span></span><span style=display:flex><span>    )<span style=color:#ff79c6>.</span>order_by(
+</span></span><span style=display:flex><span>        <span style=color:#6272a4># order the products according to how well they match the search</span>
+</span></span><span style=display:flex><span>        <span style=color:#f1fa8c>&#39;-search_score&#39;</span>,
+</span></span><span style=display:flex><span>    )
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>return</span> products
+</span></span></code></pre></div><p>We then calculate how well the product matches the search by summing the
 <code>importance</code> of each keyword it matches and then we sort the <code>Product</code>s
 according to that. Note that we don&rsquo;t check if a <code>Product</code> matches all of the
 keywords anymore since the <code>Product</code>s that matches all of the keywords will
-probably be first.</p>
-<p>Now if a customer searches for &ldquo;brown sugar&rdquo; the results will look something
-like this:</p>
-<table class="table table-sm table-striped table-bordered">
-<thead>
-<tr>
-<th>ID</th>
-<th>Name</th>
-<th>Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>2</td>
-<td>Brown Sugar</td>
-<td>World&rsquo;s best brown sugar</td>
-</tr>
-<tr>
-<td>3</td>
-<td>Icing Sugar</td>
-<td>Also known as frosting or powdered sugar</td>
-</tr>
-<tr>
-<td>1</td>
-<td>Flour</td>
-<td>Add sugar and you&rsquo;ve got a cake</td>
-</tr>
-<tr>
-<td>4</td>
-<td>Glucose Liquid</td>
-<td>Clear sugar syrup</td>
-</tr>
-</tbody>
-</table>
-<h2 id=further-steps-and-additional-reading>Further steps and additional reading</h2>
-<p>We don&rsquo;t need to stop here: we can add spellchecking, translations or anything
+probably be first.</p><p>Now if a customer searches for &ldquo;brown sugar&rdquo; the results will look something
+like this:</p><table class="table table-sm table-striped table-bordered"><thead><tr><th>ID</th><th>Name</th><th>Description</th></tr></thead><tbody><tr><td>2</td><td>Brown Sugar</td><td>World&rsquo;s best brown sugar</td></tr><tr><td>3</td><td>Icing Sugar</td><td>Also known as frosting or powdered sugar</td></tr><tr><td>1</td><td>Flour</td><td>Add sugar and you&rsquo;ve got a cake</td></tr><tr><td>4</td><td>Glucose Liquid</td><td>Clear sugar syrup</td></tr></tbody></table><h2 id=further-steps-and-additional-reading>Further steps and additional reading</h2><p>We don&rsquo;t need to stop here: we can add spellchecking, translations or anything
 else we can fit into the <code>generate_keywords</code> function. Django already has some
 text searching functions built-in, but these are PostgreSQL specific (you can
 check them out
-<a href=https://docs.djangoproject.com/en/dev/ref/contrib/postgres/search/>here</a>).</p>
-<hr>
-<footer class=text-center>
-<small class=text-muted>
-<i data-feather=git-commit></i> 7b8fb40
-</small>
-<small class="ml-2 text-muted">
-<i data-feather=package></i> 0.92.2
-</small>
-</footer>
-</article>
-<aside class="d-none d-xl-block col-xl">
-<div id=toc>
-<h4 class="mt-5 text-muted">Table of Contents</h4>
-<nav id=TableOfContents>
-<ul>
-<li><a href=#approach-1-just-plain-__icontains>Approach 1: Just plain <code>__icontains</code></a></li>
-<li><a href=#approach-2-commutative-__icontains>Approach 2: Commutative <code>__icontains</code></a></li>
-<li><a href=#approach-3-keyword-index>Approach 3: Keyword index</a></li>
-<li><a href=#approach-4-keyword-stemming>Approach 4: Keyword stemming</a></li>
-<li><a href=#approach-5-scoring-search-results>Approach 5: Scoring search results</a></li>
-<li><a href=#further-steps-and-additional-reading>Further steps and additional reading</a></li>
-</ul>
-</nav>
-</div>
-</aside>
-</div>
-</div>
-</main>
-<span class="d-md-none text-muted text-center w-100">
-&copy; 2022 Kobus van Schoor
-</span>
-</div>
-</div>
-<script src=/js/jquery-3.5.1.slim.min.js></script>
+<a href=https://docs.djangoproject.com/en/dev/ref/contrib/postgres/search/>here</a>).</p><hr><footer class=text-center><small class=text-muted><i data-feather=git-commit></i> 7b8fb40</small>
+<small class="ml-2 text-muted"><i data-feather=package></i> 0.101.0</small></footer></article><aside class="d-none d-xl-block col-xl"><div id=toc><h4 class="mt-5 text-muted">Table of Contents</h4><nav id=TableOfContents><ul><li><a href=#approach-1-just-plain-__icontains>Approach 1: Just plain <code>__icontains</code></a></li><li><a href=#approach-2-commutative-__icontains>Approach 2: Commutative <code>__icontains</code></a></li><li><a href=#approach-3-keyword-index>Approach 3: Keyword index</a></li><li><a href=#approach-4-keyword-stemming>Approach 4: Keyword stemming</a></li><li><a href=#approach-5-scoring-search-results>Approach 5: Scoring search results</a></li><li><a href=#further-steps-and-additional-reading>Further steps and additional reading</a></li></ul></nav></div></aside></div></div></main><span class="d-md-none text-muted text-center w-100">&copy; 2022 Kobus van Schoor</span></div></div><script src=/js/jquery-3.5.1.slim.min.js></script>
 <script src=/js/bootstrap.bundle.min.js></script>
 <script src=/js/feather.min.js></script>
-<script>feather.replace()</script>
-<script>var toc=$('#TableOfContents').children('ul').addClass('list-group');toc=toc.find('li').addClass('list-group-item'),toc=toc.find('a').addClass('text-dark')</script>
-<script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
-<script id=MathJax-script async src=https://cdn.jsdelivr.net/npm/mathjax@3.0.1/es5/tex-mml-chtml.js></script>
-</body>
-</html>
+<script>feather.replace()</script><script>var toc=$("#TableOfContents").children("ul").addClass("list-group"),toc=toc.find("li").addClass("list-group-item"),toc=toc.find("a").addClass("text-dark")</script><script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+<script id=MathJax-script async src=https://cdn.jsdelivr.net/npm/mathjax@3.0.1/es5/tex-mml-chtml.js></script></body></html>
