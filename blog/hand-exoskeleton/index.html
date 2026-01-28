@@ -1,0 +1,180 @@
+<!doctype html><html lang=en><head><script async src="https://www.googletagmanager.com/gtag/js?id=G-6QJ040PVFH"></script><script>var doNotTrack=!1,dnt=navigator.doNotTrack||window.doNotTrack||navigator.msDoNotTrack,doNotTrack=dnt=="1"||dnt=="yes";if(!doNotTrack){window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag("js",new Date),gtag("config","G-6QJ040PVFH")}</script><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1,shrink-to-fit=no"><meta property="og:url" content="https://kobusvs.co.za/blog/hand-exoskeleton/"><meta property="og:site_name" content="Kobus van Schoor"><meta property="og:title" content="Building a muscle (EMG) controlled hand exoskeleton"><meta property="og:description" content="An overview of my final-year engineering project, a muscle (EMG) controlled hand exoskeleton built using machine-learning and a unholy amount of hot glue."><meta property="og:locale" content="en_us"><meta property="og:type" content="article"><meta property="article:section" content="blog"><meta property="article:published_time" content="2023-11-26T19:48:35+02:00"><meta property="article:modified_time" content="2026-01-28T12:57:51+02:00"><meta property="article:tag" content="Projects"><meta property="article:tag" content="Electronics"><meta property="article:tag" content="Ai"><meta property="og:image" content="https://kobusvs.co.za/blog/hand-exoskeleton/cover.jpg"><link rel=icon type=image/svg+xml href=/img/favicon.svg><link rel=stylesheet href=/css/bootstrap.min.css><link rel=stylesheet href=https://kobusvs.co.za/scss/main.min.c94ad7431e3268ae410e15c818c27a1b6b95328608c8f62aea9723732c23df72.css><link rel=stylesheet href=https://kobusvs.co.za/scss/highlight.min.bacff1324e0b5d47142968eba7ff281719a11bfdf151acf99c88f948dadd156c.css><title>Building a Muscle (EMG) Controlled Hand Exoskeleton · Kobus van Schoor</title></head><body><nav class="d-md-none navbar navbar-expand flex-column navbar-dark text-light mobile-navbar"><a href=https://kobusvs.co.za/ class=navbar-brand><img src=/img/mobile-logo.svg width=30 height=30>
+Kobus van Schoor</a><ul class="navbar-nav w-100 d-flex justify-content-around"><li class="nav-item text-center"><a class=nav-link href=https://kobusvs.co.za/><i data-feather=home></i><br>Home</a></li><li class="nav-item text-center"><a class=nav-link href=https://kobusvs.co.za/resume/><i data-feather=file-text></i><br>Resume</a></li><li class="nav-item text-center"><a class=nav-link href=https://kobusvs.co.za/tags/projects/><i data-feather=cpu></i><br>Projects</a></li><li class="nav-item text-center"><a class=nav-link href=https://kobusvs.co.za/blog/><i data-feather=feather></i><br>Blog</a></li></ul></nav><div class=container-fluid><div class=row><nav class="d-none d-md-flex col-md-3 col-lg-2 flex-column align-items-start sidebar"><div class="text-center mx-auto"><a href=https://kobusvs.co.za/><img src=/img/logo.svg class="mt-3 desktop-logo"></a><h5 class="align-self-center pt-3">Kobus van Schoor</h5></div><small class="align-self-center mb-3"><i class=f-16 data-feather=map-pin></i>Pretoria, South Africa
+</small><span class="align-self-center d-flex flex-row"><a href=https://github.com/kobus-v-schoor/ class=social><i data-feather=github></i>
+</a><a href=https://www.linkedin.com/in/kobus-van-schoor class=social><i data-feather=linkedin></i>
+</a><a href=mailto:v.schoor.kobus@gmail.com class=social><i data-feather=mail></i></a></span><hr><a class=sidebar-link href=https://kobusvs.co.za/><i data-feather=home></i>
+Home
+</a><a class=sidebar-link href=https://kobusvs.co.za/resume/><i data-feather=file-text></i>
+Resume
+</a><a class=sidebar-link href=https://kobusvs.co.za/tags/projects/><i data-feather=cpu></i>
+Projects
+</a><a class=sidebar-link href=https://kobusvs.co.za/blog/><i data-feather=feather></i>
+Blog
+</a><small class="mt-auto align-self-center">&copy; 2026 Kobus van Schoor</small></nav><main class="col-md-9 col-lg-10"><div class="container mt-3 mt-xl-5 mb-5"><div class=row><article class=col-xl-8><h1>Building a muscle (EMG) controlled hand exoskeleton</h1><div class="text-muted d-flex flex-column flex-md-row"><span class="d-flex align-items-center"><i data-feather=calendar></i>26 Nov 2023
+</span><span class="d-flex align-items-center ml-md-2"><i data-feather=clock></i>11 minutes</span></div><div class="mb-2 text-truncate text-muted"><i data-feather=tag></i><a class=text-secondary href=https://kobusvs.co.za/tags/projects/>projects</a>, <a class=text-secondary href=https://kobusvs.co.za/tags/electronics/>electronics</a>, <a class=text-secondary href=https://kobusvs.co.za/tags/ai/>ai</a></div><hr><p>For my final-year engineering project I was tasked with building a hand
+exoskeleton that is controlled using EMG signals (your muscle signals, De
+Luca<sup id=fnref:1><a href=#fn:1 class=footnote-ref role=doc-noteref>1</a></sup> has some good info on EMG signals&rsquo; biochemical processes and
+characteristics if you&rsquo;re interested). The goal of the project is to help
+people that are affected by hand paralysis, with the idea being that they can
+then control their hands using the exoskeleton to hold objects. My initial plan
+was to throw the (very) noisy and small EMG signals into a neural-network and
+let it figure it out by itself. Turns out machine-learning algorithms are
+actually quite dumb. That didn&rsquo;t work, however after a year long of building a
+lot of instrumentation amplifiers, strange sensors and painstakingly ripping
+electrode stickers from my arm I got to something usable. TLDR; it can classify
+five gestures with an average accuracy of 92% (at least on me). Apart from
+that it can also figure out with what force you want to open and close your
+hand, and it also makes sure that you don&rsquo;t dislocate your fingers while doing
+so.</p><h2 id=the-basic-design>The basic design</h2><p>The idea was that I wanted to be able to open and close a user&rsquo;s fingers by
+using the signals their muscles naturally emit while trying to perform the
+intended movement. To do this I needed to read their EMG signals through some
+electrodes on their forearm (or actually, basically anywhere, but doing it on
+their forearm allows you to control the exoskeleton using your natural finger
+movements), do some feature extraction and then pass it on to the
+classification algorithm. Apart from this I also needed to perform mechanical
+control on a hand exoskeleton, which includes force feedback and also some
+safety checks.</p><p>To read the EMG signals you need some instrumentation amplifiers and filtering.
+The EMG signals are on the order of about 1.5mVrms (in my case I found it to be
+a lot smaller, more on that later), so the amplifiers are going to have to have
+quite a bit of gain. Luckily, the signals are rather low frequency (&lt;500Hz) so
+that made things a bit easier.</p><p>Then, once the signals were in the Volts range I could sample them using a
+micro-controller, and start doing some processing on them. Once sampled, the
+signals are first passed through a bunch of feature extraction algorithms to
+get them in a usable form, and once that is done, they&rsquo;re plugged into a
+neural-net for the actual classification. The job of the classifier is to
+figure out which one of five gestures you&rsquo;re trying to perform (or if you just
+want to do nothing, i.e. hold). Once the classification is done, it&rsquo;s on to the
+actuator control algorithms.</p><p>The exoskeleton was powered by a bunch of small motors pulling on some strong
+fishing line. The positions of the fingers weren&rsquo;t really that important, as I
+was not trying to predict continuous hand kinematics. Rather, which is more
+important, is the force feedback from the exoskeleton. Instead of opting for
+force-sensing resistors I chose to use the motor current as force feedback - it
+ended up working very reliably and required no additional sensors (and wiring
+to the hand) which was a big win since those force-sensing resistors
+(essentially strain gauges, but flexible and smaller) are unreasonably
+expensive.</p><p>And as they say, safety last. I added some extra features to detect if the
+fingers were bending too far, current limiting resistors to protect you from
+3.3V accidentally touching your skin (I even had to get ethics clearance for
+this) and also an emergency off switch in case of, you know, it gaining
+sentience and trying to kill you.</p><h2 id=the-emg-amplifiers>The EMG amplifiers</h2><p>To read EMG signals you need to use a high gain, high input impedance
+instrumentation amplifier with some high- and low-pass filtering to get rid of
+noise and movement artefacts. I couldn&rsquo;t use any off-the-shelf IA chips like
+the AD620 as I wouldn&rsquo;t get credit for the design, so I opted for the classic
+triple-opamp IA. Following the recommendations from <em>The Art of Electronics</em>&rsquo;s
+IA section I was able to get a fairly high CMRR without resorting to any crazy
+resistor tolerances or special opamps. Pairing that with shielded cables and a
+low-impedance ground reference electrode (see <sup id=fnref1:1><a href=#fn:1 class=footnote-ref role=doc-noteref>1</a></sup> for details on electrode
+placement), on a good day the EMG signals were almost completely
+mains-free.</p><figure class="figure w-100" style=transform:rotate(0)><a class="stretched-link zoom-link" href=/blog/hand-exoskeleton/emg-amps.jpg><i class=zoom-icon data-feather=zoom-in></i>
+</a><img src=/blog/hand-exoskeleton/emg-amps_hu_4b2765364f060efb.webp class="figure-img img-fluid rounded"><figcaption class=figure-caption>EMG amplifiers built using the latest through-hole technology. Also seen is filtering and clamping circuitry. Trimmer pot is to adjust offset.</figcaption></figure><figure class="figure w-100" style=transform:rotate(0)><a class="stretched-link zoom-link" href=/blog/hand-exoskeleton/emg-signal.svg><i class=zoom-icon data-feather=zoom-in></i>
+</a><img src=/blog/hand-exoskeleton/emg-signal.svg class="figure-img img-fluid rounded w-100"><figcaption class=figure-caption>What the EMG signals looks like after amplification and sampling on the micro.</figcaption></figure><h2 id=emg-control-model>EMG control model</h2><p>If it&rsquo;s not clear from the previous image, EMG signals are pretty useless in
+their raw form. They are noisy and are plagued with cross-talk between muscles.
+One of the main muscles that control the finger flexion is the flexor digitorum
+profundus <sup id=fnref:2><a href=#fn:2 class=footnote-ref role=doc-noteref>2</a></sup> (don&rsquo;t quote me on this, my biology knowledge is laughable).
+Unfortunately, as all the fingers&rsquo; muscles are grouped together, you cannot
+easily separate the signals based on what finger is activating. So, to separate
+the finger activation signals I employed a few feature extraction algorithms
+and machine-learning. The feature-extraction algorithms mostly consisted of
+simple time-domain features (things like the RMS value and zero-crossings), but
+I also added the Wavelet transform, a time-frequency domain feature, which is a
+operation that essentially bandpass filters the signal at different frequencies
+(this explanation is lacking spectacularly, but I&rsquo;d be hard-pressed to properly
+explain it correctly so this is what you get). This resulted in a feature
+vector that was relatively robust against the errors caused by placing
+electrodes on slightly different positions in different usage sessions. Three
+EMG channels were used (two on the FDP muscle and one on the EDP, for hand
+extension) and the feature extraction algorithms were executed on each channel
+and then fed into the classification model.</p><p>For the classification model, I made use of a neural-network. They tend to be
+fairly widely used in the field of EMG classification and are fairly efficient
+when implemented on an embedded model (not talking about training here, just
+inference). Using a neural-network has its downsides though, as I had to
+collect a <em>lot</em> of data before the model generalized well (I needed to collect
+about 1 hour&rsquo;s worth of EMG samples from myself for the final model I used,
+many more hours for testing). I generated labelled datasets by using a simple
+button interface. When I executed a gesture, I just pressed the corresponding
+button with my other hand - the micro then paired the EMG samples with the
+pressed buttons and transmitted that to my PC for training.</p><figure class="figure w-100" style=transform:rotate(0)><a class="stretched-link zoom-link" href=/blog/hand-exoskeleton/gestures.svg><i class=zoom-icon data-feather=zoom-in></i>
+</a><img src=/blog/hand-exoskeleton/gestures.svg class="figure-img img-fluid rounded w-100"><figcaption class=figure-caption>The five gestures (six if you include doing nothing) the classification could classify.</figcaption></figure><p>The neural-network was then trained as a multi-class classifier, with each
+output corresponding to one of the gestures from the diagram above. A
+classification accuracy of 94% was achieved on a validation dataset. I later
+also verified the classifier&rsquo;s real-world performance using the same button
+interface I used for collecting the training data - the classifier&rsquo;s output,
+along with the true value (that I provided by pressing the corresponding
+button) was compared and I got a classification accuracy of 92%. Each gesture
+was not similarly accurate however, with the pinky being the peskiest.</p><figure class="figure w-100" style=transform:rotate(0)><a class="stretched-link zoom-link" href=/blog/hand-exoskeleton/clf-accuracy.svg><i class=zoom-icon data-feather=zoom-in></i>
+</a><img src=/blog/hand-exoskeleton/clf-accuracy.svg class="figure-img img-fluid rounded w-100"><figcaption class=figure-caption>Real-world classification accuracy of the model for each gesture (about 5 minutes worth of testing)</figcaption></figure><p>I ran into a few interesting issues with the classification model:</p><ul><li>Interestingly (or not, depending on your expectations), training the model on
+multiple user&rsquo;s data decreased the classification accuracy and, in some
+cases, the model wasn&rsquo;t even usable after training. I expected there to be
+more similarities between the EMG signals of different people. So, for each
+person that uses the exoskeleton a unique model had to be trained.</li><li>Once I started actuating the motors, they started introducing low-frequency
+noise on the power rails due to their inrush current. Adding bypass caps
+improved the situation somewhat, but the inrush dips were stubborn as I had a
+reference voltage generated using a resistor divider (the trimpot) from the
+rails, which had some serious gain on it. These low-frequency dips and spikes
+which now presented themselves in the EMG signals sometimes caused the
+classification model to start making errors and causing interesting feedback
+loops where the classifier would start the motor, and the motor would cause
+the classifier to make a certain classification again leading to oscillation.
+I solved this by making the motors activate during training - this means the
+power rail dips were present in the training data as well, and consequently
+the classification model was able to successfully reject the noise.</li><li>Mains noise pickup was inevitable, sometimes a power cord would lie on the
+floor touching my feet, and it would significantly increase the mains noise
+in the EMG readings. Following the same approach as with the motor noise, I
+purposely including training data with significant (and not so significant)
+mains noise, which again improved the classifiers real-world robustness.</li></ul><h2 id=force-estimation>Force estimation</h2><p>Now that I had the gesture classification working I had to had force
+estimation, i.e. the exoskeleton needed to adjust its applied force using the
+EMG signals as the control. The harder you close your hand, the harder the
+exoskeleton should close itself. I&rsquo;ll get to how the exoskeleton measured its
+applied force at a later point, but for now just assume it worked. When you
+perform stronger contractions with your muscles, the RMS value of the EMG
+signals start to also increase, which means that you can use the RMS value as a
+relative indicator of contraction strength. However, just using the RMS value
+from the EMG signal directly is perilous - what happens if you stand on a wire
+causing a large mains noise component in the signal? Have a look at the
+following frequency analysis of an EMG signal in the presence of some mild
+mains noise - you&rsquo;ll see that mains magnitude can easily dominate the actual
+EMG signal, including the RMS estimate.</p><figure class="figure w-100" style=transform:rotate(0)><a class="stretched-link zoom-link" href=/blog/hand-exoskeleton/emg-fft.svg><i class=zoom-icon data-feather=zoom-in></i>
+</a><img src=/blog/hand-exoskeleton/emg-fft.svg class="figure-img img-fluid rounded w-100"><figcaption class=figure-caption>FFT during flexion and when the hand is relaxed in the prescence of mains noise</figcaption></figure><p>The thing is, mains noise isn&rsquo;t the only issue - if something causes an
+electrode to move on the skin, that also creates significant low-frequency
+noise. So the whole low-frequency region can cause the RMS value to wildly
+fluctuate. To remedy this, I did some digital low-pass filtering on the EMG
+signal before calculating the RMS, as the higher frequencies tended to be less
+affected by noise. The filtered signal&rsquo;s RMS could then be reliably used for
+force-estimation.</p><h2 id=measuring-force-in-the-exoskeleton>Measuring force in the exoskeleton</h2><p>Now that I had the &ldquo;how hard&rdquo; part figured out from the EMG signals, I needed
+the exoskeleton to actually know how hard it was <em>actually</em> squeezing.</p><p>The direct solution here is to use some Force-Sensing Resistors (FSRs) on the
+fingertips. These are little pads that change resistance when you press on
+them. They are accurate, reliable, and unfortunately, unreasonably expensive
+for a student budget. Plus, running wires all the way down to the fingertips is
+a mechanical nightmare waiting to snag on a door handle.</p><p>So, I decided to use the motor current as a proxy for force. The physics here
+is actually pretty convenient: the torque a DC motor outputs is proportional to
+the current it draws. If the exoskeleton tries to close the hand and hits an
+object, the motors stall, and the current spikes. By measuring that current, I
+can infer how much force the fingers are exerting.</p><p>To implement this, I used a simple current shunt resistor (a resistor with a
+very low resistance) in series with the motors. By measuring the voltage drop
+across this resistor, the microcontroller could monitor the current in
+real-time.</p><figure class="figure w-100" style=transform:rotate(0)><a class="stretched-link zoom-link" href=/blog/hand-exoskeleton/current-sensing.svg><i class=zoom-icon data-feather=zoom-in></i>
+</a><img src=/blog/hand-exoskeleton/current-sensing.svg class="figure-img img-fluid rounded w-100"><figcaption class=figure-caption>The current sensing circuit. Simple, cheap, and no wires running to the fingertips.</figcaption></figure><p>This setup allowed for a closed-loop control system without a single sensor on
+the actual glove. The microcontroller simply checks the motor current against a
+dynamic threshold calculated from the EMG signal. If the motor current (actual
+force) exceeds the EMG-derived threshold (intended force), the motor stops. It
+turned out to be surprisingly reliable, effectively preventing the exoskeleton
+from crushing things (or the user&rsquo;s fingers) while saving me from wiring hell.</p><h2 id=real-time-inference-on-the-microcontroller>Real-time inference on the microcontroller</h2><p>The real challenge with the neural-net approach was getting it to run, in
+real-time, on a very constrained microcontroller.</p><p>Standard microcontrollers often struggle with the heavy floating-point
+mathematics required for neural networks. To address this, I selected an
+<strong>STM32</strong> microcontroller equipped with a hardware <strong>Floating Point Unit
+(FPU)</strong>. This hardware allowed the system to perform single-precision (32-bit)
+floating-point calculations natively, avoiding the severe performance penalties
+usually associated with software-based emulation.</p><p>Rather than attempting to run a heavy interpreter like TensorFlow Lite, I took
+a more direct approach. I exported the trained weights and biases from the
+Python model and embedded them directly into the microcontroller&rsquo;s flash memory
+as static C arrays.</p><p>The inference loop operated as follows:</p><ol><li><strong>Data Acquisition:</strong> The system records EMG data for a 200ms window.</li><li><strong>Feature Extraction:</strong> Next I extracted specific time-domain features—such
+as Zero-Crossings and Slope Sign-Changes - rather than processing the raw
+signal. This compressed the input into a manageable vector.</li><li><strong>Calculation:</strong> The microcontroller performs matrix multiplication using
+the extracted features and the stored weights (this made use of the
+hardware-accellerated FPU)</li><li><strong>Classification:</strong> The output provides a probability score for each
+gesture. The system selects the gesture with the highest probability (e.g.,
+&ldquo;Index Finger Flex&rdquo;) to drive the motors.</li></ol><p>This approach, combining hardware acceleration with efficient feature
+extraction, ensured the inference process was rapid. This left ample processing
+time for the safety state machine to monitor limits and prevent mechanical
+failure.</p><h2 id=putting-it-all-together>Putting it all together</h2><div class="mb-3 embed-responsive embed-responsive-16by9"><iframe class=embed-responsive-item src="https://www.youtube-nocookie.com/embed/8Nla6EqSfjQ?rel=0" allowfullscreen></iframe></div><div class=footnotes role=doc-endnotes><hr><ol><li id=fn:1><p><a href=https://delsyseurope.com/downloads/TUTORIAL/a-practicum-on-the-use-of-semg-signals-in-movement-sciences.pdf>A Practicum on the Use of sEMG Signals in Movement Sciences</a>&#160;<a href=#fnref:1 class=footnote-backref role=doc-backlink>&#8617;&#xfe0e;</a>&#160;<a href=#fnref1:1 class=footnote-backref role=doc-backlink>&#8617;&#xfe0e;</a></p></li><li id=fn:2><p><a href=https://www.kenhub.com/en/library/anatomy/flexor-digitorum-profundus-muscle>Flexor digitorum profundus muscle</a>&#160;<a href=#fnref:2 class=footnote-backref role=doc-backlink>&#8617;&#xfe0e;</a></p></li></ol></div><hr><footer class=text-center><small class=text-muted><i data-feather=git-commit></i> 8cd44d0
+</small><small class="ml-2 text-muted"><i data-feather=package></i> 0.154.5</small></footer></article><aside class="d-none d-xl-block col-xl"><div id=toc><h4 class="mt-5 text-muted">Table of Contents</h4><nav id=TableOfContents><ul><li><a href=#the-basic-design>The basic design</a></li><li><a href=#the-emg-amplifiers>The EMG amplifiers</a></li><li><a href=#emg-control-model>EMG control model</a></li><li><a href=#force-estimation>Force estimation</a></li><li><a href=#measuring-force-in-the-exoskeleton>Measuring force in the exoskeleton</a></li><li><a href=#real-time-inference-on-the-microcontroller>Real-time inference on the microcontroller</a></li><li><a href=#putting-it-all-together>Putting it all together</a></li></ul></nav></div></aside></div></div></main><span class="d-md-none text-muted text-center w-100">&copy; 2026 Kobus van Schoor</span></div></div><script src=/js/jquery-3.5.1.slim.min.js></script><script src=/js/bootstrap.bundle.min.js></script><script src=/js/feather.min.js></script><script>feather.replace()</script><script>var toc=$("#TableOfContents").children("ul").addClass("list-group"),toc=toc.find("li").addClass("list-group-item"),toc=toc.find("a").addClass("text-dark")</script><script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script><script id=MathJax-script async src=https://cdn.jsdelivr.net/npm/mathjax@3.0.1/es5/tex-mml-chtml.js></script></body></html>
